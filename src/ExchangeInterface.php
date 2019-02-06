@@ -7,7 +7,7 @@ interface ExchangeInterface
     /**
      * @return string
      */
-    public function getCacheKey();
+    public function getCacheKey() : string;
     
     /**
      * @param string $key
@@ -15,8 +15,10 @@ interface ExchangeInterface
      */
     public function getPair($key) : \Kobens\Exchange\Pair\PairInterface;
     
-//     /**
-//      * @return \Magento\Framework\Cache\FrontendInterface
-//      */
-//     public function getCache();
+     /**
+      * TODO: need a cache interface since pulling this out of Magento
+      *
+      * @return \Magento\Framework\Cache\FrontendInterface
+      */
+     public function getCache();
 }
