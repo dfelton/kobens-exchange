@@ -3,7 +3,8 @@
     "description" : "Library for providing a common interface for interacting with Exchange accounts via API.",
     "type" : "library",
     "license" : "BSD-3-Clause",
-    "authors" : [{
+    "authors" : [
+        {
             "name" : "Darren Felton",
             "email" : "darren_felton@hotmail.com"
         }
