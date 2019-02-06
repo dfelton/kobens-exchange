@@ -1,0 +1,27 @@
+{
+	"name" : "kobens/kobens-exchange",
+	"description" : "Library for providing a common interface for interacting with Exchange accounts via API.",
+    "type" : "library",
+    "license" : "BSD-3-Clause",
+    "authors" : [{
+            "name" : "Darren Felton",
+            "email" : "darren_felton@hotmail.com"
+        }
+    ],
+    "minimum-stability" : "dev",
+    "repositories" : [
+        {
+            "type" : "git",
+            "url" : "https://github.com/dfelton/kobens-currency",
+            "name" : "kobens-currency"
+        }
+    ],
+    "reqiure" : {
+        "kobens/kobens-currency" : "*"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "Kobens\\Exchange\\" : "src"
+        }
+    }
+}
