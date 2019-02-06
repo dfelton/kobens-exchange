@@ -14,7 +14,7 @@
         {
             "type" : "git",
             "url" : "https://github.com/dfelton/kobens-currency",
-            "name" : "kobens-currency"
+            "name" : "Kobens Currency"
         }
     ],
     "reqiure" : {
