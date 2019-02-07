@@ -18,6 +18,7 @@
         }
     ],
     "require" : {
+        "php" : ">=7.0.0",
         "kobens/kobens-currency" : "*"
     },
     "autoload" : {
