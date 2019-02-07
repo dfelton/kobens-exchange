@@ -12,12 +12,12 @@ interface PairInterface
     /**
      * @return \Kobens\Currency\CurrencyInterface
      */
-    public function getBaseCurrency();
+    public function getBaseCurrency() : \Kobens\Currency\CurrencyInterface;
     
     /**
      * @return \Kobens\Currency\CurrencyInterface
      */
-    public function getQuoteCurrency();
+    public function getQuoteCurrency() : \Kobens\Currency\CurrencyInterface;
     
     /**
      * Return the equivilant base currency quantity based
