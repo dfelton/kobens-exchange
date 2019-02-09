@@ -117,13 +117,15 @@ trait BookTraits
      */
     public function getBook()
     {
-        $isAlive = $this->cache->test($this->getBookCacheKey());
-        if (!$isAlive) {
+        if ($this->cache->hasItem($this->getBookCacheKey())) {
             throw new \Kobens\Exchange\Exception\ClosedBookException('Market book is closed.');
-        } elseif (time() - $isAlive >= $this->bookExpiration) {
-            throw new \Kobens\Exchange\Exception\ClosedBookException('Market book has expired.');
+        } else {
+            $meta = $this->cache->getMetadata($this->getBookCacheKey());
+            if (time() - $meta['mtime'] >= $this->bookExpiration) {
+                throw new \Kobens\Exchange\Exception\ClosedBookException('Market book has expired.');
+            }
         }
-        return unserialize($this->cache->load($this->getBookCacheKey()));
+        return $this->cache->getItem($this->getBookCacheKey());
     }
 
     /**
