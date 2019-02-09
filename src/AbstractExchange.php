@@ -2,46 +2,43 @@
 
 namespace Kobens\Exchange;
 
-/**
- * TODO: Replace magento's cache interface with chosen caching interface.
- */
 abstract class AbstractExchange
 {
     /**
-     * @var \Magento\Framework\Cache\FrontendInterface
+     * @var \Zend\Cache\Storage\StorageInterface
      */
     protected $cache;
 
     /**
-     * @var \Kobens\Core\Model\Exchange\Pair\PairInterface[]
+     * @var \Kobens\Exchange\Pair\PairInterface[]
      */
     protected $pairs = [];
 
     /**
-     * @param \Magento\Framework\Cache\FrontendInterface $cacheInterface
-     * @param \Kobens\Core\Model\Exchange\Pair\PairInterface[] $pairs
+     * @param \Zend\Cache\Storage\StorageInterface $cacheInterface
+     * @param \Kobens\Exchange\Pair\PairInterface[] $pairs
      */
     public function __construct(
-        \Magento\Framework\Cache\FrontendInterface $cacheInterface,
+        \Zend\Cache\Storage\StorageInterface $cacheInterface,
         array $pairs = []
-        ) {
-            $this->cache = $cacheInterface;
-            $this->addPairs($pairs);
+    ) {
+        $this->cache = $cacheInterface;
+        $this->addPairs($pairs);
     }
 
     /**
      * Add currency pair to the exchange
      *
-     * @param \Kobens\Core\Model\Exchange\Pair\PairInterface[] $pairs
+     * @param \Kobens\Exchange\Pair\PairInterface[] $pairs
      * @throws \Exception
      */
-    protected function addPairs($pairs)
+    protected function addPairs(array $pairs)
     {
         if (!is_array($pairs)) {
             $pairs = [$pairs];
         }
         foreach ($pairs as $pair) {
-            if (!$pair instanceof \Kobens\Core\Model\Exchange\Pair\PairInterface) {
+            if (!$pair instanceof \Kobens\Exchange\Pair\PairInterface) {
                 throw new \Exception('Invalid Pair Interface');
             }
             $base = $pair->getBaseCurrency()->getPairIdentity();
@@ -52,21 +49,21 @@ abstract class AbstractExchange
 
     /**
      * {@inheritDoc}
-     * @see \Kobens\Core\Model\Exchange\ExchangeInterface::getCache()
+     * @see \Kobens\Exchange\ExchangeInterface::getCache()
      */
-    public function getCache()
+    public function getCache() : \Zend\Cache\Storage\StorageInterface
     {
         return $this->cache;
     }
 
     /**
      * @param string $key
-     * @return \Kobens\Core\Model\Exchange\Pair\PairInterface
+     * @return \Kobens\Exchange\Pair\PairInterface
      */
-    public function getPair(string $key) : \Kobens\Core\Model\Exchange\Pair\PairInterface
+    public function getPair(string $key) : \Kobens\Exchange\Pair\PairInterface
     {
         if (!isset($this->pairs[$key])) {
-            throw new \Exception('Currency Pair "'.$key.'" not found on exchange');
+            throw new \Exception(\sprintf('Currency Pair "%s" not found on exchange', $key));
         }
         return $this->pairs[$key];
     }

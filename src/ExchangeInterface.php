@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Kobens\Exchange;
 
@@ -8,17 +8,15 @@ interface ExchangeInterface
      * @return string
      */
     public function getCacheKey() : string;
-    
+
     /**
      * @param string $key
      * @return \Kobens\Exchange\Pair\PairInterface
      */
     public function getPair($key) : \Kobens\Exchange\Pair\PairInterface;
-    
+
      /**
-      * TODO: need a cache interface since pulling this out of Magento
-      *
-      * @return \Magento\Framework\Cache\FrontendInterface
+      * @return \Zend\Cache\Storage\StorageInterface
       */
-     public function getCache();
+     public function getCache() : \Zend\Cache\Storage\StorageInterface;
 }
