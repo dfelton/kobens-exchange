@@ -1,5 +1,6 @@
 {
     "name" : "kobens/kobens-exchange",
+    "version" : "0.0.1",
     "description" : "Library for providing a common interface for interacting with Exchange accounts via API.",
     "type" : "library",
     "license" : "BSD-3-Clause",
