@@ -2,59 +2,48 @@
 
 namespace Kobens\Exchange\Book\Keeper;
 
+use Kobens\Exchange\Book\Trade\TradeInterface;
+use Kobens\Exchange\ExchangeInterface;
+use Kobens\Exchange\Pair\PairInterface;
+use Zend\Cache\Storage\StorageInterface;
+
 abstract class AbstractKeeper implements KeeperInterface
 {
     use \Kobens\Exchange\Book\BookTraits;
 
     /**
-     * @var \Zend\Cache\Storage\StorageInterface
+     * @var StorageInterface
      */
     protected $cache;
 
-    /**
-     * @param \Kobens\Exchange\Pair\PairInterface $pairInterface
-     * @param \Kobens\Exchange\ExchangeInterface $exchangeInterface
-     */
     public function __construct(
-        \Kobens\Exchange\ExchangeInterface $exchangeInterface,
-        \Kobens\Exchange\Pair\PairInterface $pairInterface
+        ExchangeInterface $exchangeInterface,
+        PairInterface $pairInterface
     ) {
         $this->cache = $exchangeInterface->getCache();
         $this->exchange = $exchangeInterface;
         $this->pair = $pairInterface;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see \Kobens\Exchange\Book\Keeper\KeeperInterface::openBook()
-     */
-    abstract function openBook();
 
-    /**
-     * @return bool
-     */
-    protected function setPulse()
+    protected function setPulse() : bool
     {
         return $this->cache->setItem(
             $this->getHeartbeatCacheKey(),
-            (string) microtime(true)
+            (string) \microtime(true)
         );
     }
 
     /**
      * Update the book
-     *
-     * @param string $makerSide
-     * @param string $quote
-     * @param string $remaining
      */
-    protected function updateBook(string $makerSide, string $quote, string $remaining)
+    protected function updateBook(string $makerSide, string $quote, string $remaining) : void
     {
         $book = $this->getBook();
-        if (floatval($remaining) === floatval(0)) {
-            unset($book[$makerSide][(string) $quote]);
+        if (\floatval($remaining) === \floatval(0)) {
+            unset($book[$makerSide][$quote]);
         } else {
-            $book[$makerSide][(string) $quote] = $remaining;
+            $book[$makerSide][$quote] = $remaining;
         }
         $this->cache->setItem(
             $this->getBookCacheKey(),
@@ -62,10 +51,7 @@ abstract class AbstractKeeper implements KeeperInterface
         );
     }
 
-    /**
-     * @param array $book
-     */
-    protected function populateBook(array $book)
+    protected function populateBook(array $book) : void
     {
         $this->cache->setItem(
             $this->getBookCacheKey(),
@@ -73,10 +59,7 @@ abstract class AbstractKeeper implements KeeperInterface
         );
     }
 
-    /**
-     * @param \Kobens\Exchange\Book\Trade\TradeInterface $trade
-     */
-    protected function setLastTrade(\Kobens\Exchange\Book\Trade\TradeInterface $trade)
+    protected function setLastTrade(TradeInterface $trade) : void
     {
         $this->cache->setItem(
             $this->getLastTradeCacheKey(),

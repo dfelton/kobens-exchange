@@ -2,6 +2,15 @@
 
 namespace Kobens\Exchange\Book;
 
+use Kobens\Currency\CurrencyInterface;
+use Kobens\Exchange\ExchangeInterface;
+use Kobens\Exchange\Pair\PairInterface;
+use Kobens\Exchange\Exception\ClosedBookException;
+use Zend\Cache\Storage\StorageInterface;
+
+/**
+ * @todo Reconsider this whole trait.... @see https://codereview.stackexchange.com/a/74195/193755
+ */
 trait BookTraits
 {
     /**
@@ -20,17 +29,17 @@ trait BookTraits
     protected $book;
 
     /**
-     * @var \Kobens\Exchange\ExchangeInterface
+     * @var ExchangeInterface
      */
     protected $exchange;
 
     /**
-     * @var \Kobens\Exchange\Pair\PairInterface
+     * @var PairInterface
      */
     protected $pair;
 
     /**
-     * @var \Zend\Cache\Storage\StorageInterface
+     * @var StorageInterface
      */
     protected $cache;
 
@@ -49,23 +58,18 @@ trait BookTraits
      */
     protected $cacheKeyLastTrade;
 
-    /**
-     * @return \Kobens\Exchange\ExchangeInterface
-     */
-    public function getExchange() : \Kobens\Exchange\ExchangeInterface
+    public function getExchange() : ExchangeInterface
     {
         return $this->exchange;
     }
 
     /**
      * Return the cache key for the current book
-     *
-     * @return string
      */
     protected function getBookCacheKey() : string
     {
         if (!$this->cacheKeyBook) {
-            $this->cacheKeyBook = implode('::', [
+            $this->cacheKeyBook = \implode('::', [
                 'kobens',
                 $this->getExchange()->getCacheKey(),
                 'market-book',
@@ -75,13 +79,10 @@ trait BookTraits
         return $this->cacheKeyBook;
     }
 
-    /**
-     * @return string
-     */
     protected function getLastTradeCacheKey() : string
     {
         if (!$this->cacheKeyLastTrade) {
-            $this->cacheKeyLastTrade = implode('::', [
+            $this->cacheKeyLastTrade = \implode('::', [
                 'kobens',
                 $this->getExchange()->getCacheKey(),
                 $this->getBaseCurrency()->getCacheIdentifier(),
@@ -92,13 +93,10 @@ trait BookTraits
         return $this->cacheKeyLastTrade;
     }
 
-    /**
-     * @return string
-     */
     protected function getHeartbeatCacheKey() : string
     {
         if (!$this->cacheKeyHeartbeat) {
-            $this->cacheKeyHeartbeat = implode('::', [
+            $this->cacheKeyHeartbeat = \implode('::', [
                 'kobens',
                 $this->getExchange()->getCacheKey(),
                 $this->getBaseCurrency()->getCacheIdentifier(),
@@ -112,42 +110,35 @@ trait BookTraits
     /**
      * Return the market's order book.
      *
-     * @throws \Kobens\Exchange\Exception\ClosedBookException
+     * @throws ClosedBookException
      * @return mixed
      */
     public function getBook()
     {
         if (!$this->cache->hasItem($this->getBookCacheKey())) {
-            throw new \Kobens\Exchange\Exception\ClosedBookException('Market book is closed.');
+            throw new ClosedBookException('Market book is closed.');
         }
         $meta = $this->cache->getMetadata($this->getBookCacheKey());
-        if (time() - $meta['mtime'] >= $this->bookExpiration) {
-            throw new \Kobens\Exchange\Exception\ClosedBookException('Market book has expired.');
+        if (\time() - $meta['mtime'] >= $this->bookExpiration) {
+            throw new ClosedBookException('Market book has expired.');
         }
         return $this->cache->getItem($this->getBookCacheKey());
     }
 
-    /**
-     * @return \Kobens\Exchange\Pair\PairInterface
-     */
-    public function getPair() : \Kobens\Exchange\Pair\PairInterface
+    public function getPair() : PairInterface
     {
         return $this->pair;
     }
 
-    /**
-     * @return \Kobens\Currency\CurrencyInterface
-     */
-    public function getBaseCurrency() : \Kobens\Currency\CurrencyInterface
+    public function getBaseCurrency() : CurrencyInterface
     {
         return $this->pair->getBaseCurrency();
     }
 
-    /**
-     * @return \Kobens\Currency\CurrencyInterface
-     */
-    public function getQuoteCurrency() : \Kobens\Currency\CurrencyInterface
+    public function getQuoteCurrency() : CurrencyInterface
     {
         return $this->pair->getQuoteCurrency();
     }
+
 }
+

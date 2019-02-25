@@ -2,25 +2,28 @@
 
 namespace Kobens\Exchange;
 
+use Zend\Cache\Storage\StorageInterface;
+use Kobens\Exchange\Pair\PairInterface;
+
 abstract class AbstractExchange
 {
     /**
-     * @var \Zend\Cache\Storage\StorageInterface
+     * @var StorageInterface
      */
     protected $cache;
 
     /**
-     * @var \Kobens\Exchange\Pair\PairInterface[]
+     * @var PairInterface[]
      */
     protected $pairs = [];
 
     /**
-     * @param \Zend\Cache\Storage\StorageInterface $cacheInterface
-     * @param \Kobens\Exchange\Pair\PairInterface[] $pairs
+     * @param StorageInterface $cacheInterface
+     * @param PairInterface[] $pairs
      */
     public function __construct(
-        \Zend\Cache\Storage\StorageInterface $cacheInterface,
-        array $pairs = []
+        StorageInterface $cacheInterface,
+        array $pairs
     ) {
         $this->cache = $cacheInterface;
         $this->addPairs($pairs);
@@ -34,11 +37,8 @@ abstract class AbstractExchange
      */
     protected function addPairs(array $pairs)
     {
-        if (!is_array($pairs)) {
-            $pairs = [$pairs];
-        }
         foreach ($pairs as $pair) {
-            if (!$pair instanceof \Kobens\Exchange\Pair\PairInterface) {
+            if (!$pair instanceof PairInterface) {
                 throw new \Exception('Invalid Pair Interface');
             }
             $base = $pair->getBaseCurrency()->getPairIdentity();
@@ -51,7 +51,7 @@ abstract class AbstractExchange
      * {@inheritDoc}
      * @see \Kobens\Exchange\ExchangeInterface::getCache()
      */
-    public function getCache() : \Zend\Cache\Storage\StorageInterface
+    public function getCache() : StorageInterface
     {
         return $this->cache;
     }
@@ -60,10 +60,13 @@ abstract class AbstractExchange
      * @param string $key
      * @return \Kobens\Exchange\Pair\PairInterface
      */
-    public function getPair(string $key) : \Kobens\Exchange\Pair\PairInterface
+    public function getPair(string $key) : PairInterface
     {
         if (!isset($this->pairs[$key])) {
-            throw new \Exception(\sprintf('Currency Pair "%s" not found on exchange', $key));
+            throw new \Exception(\sprintf(
+                'Currency Pair "%s" not found on exchange',
+                $key
+            ));
         }
         return $this->pairs[$key];
     }

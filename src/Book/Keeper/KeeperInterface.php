@@ -4,5 +4,5 @@ namespace Kobens\Exchange\Book\Keeper;
 
 interface KeeperInterface
 {
-    public function openBook();
+    public function openBook() : void;
 }

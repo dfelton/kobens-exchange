@@ -7,72 +7,60 @@
  */
 namespace Kobens\Exchange\Book;
 
+use Kobens\Currency\CurrencyInterface;
+use Kobens\Exchange\Book\Trade\TradeInterface;
+use Kobens\Exchange\ExchangeInterface;
+use Kobens\Exchange\Pair\PairInterface;
+
 interface BookInterface
 {
     /**
      * Return the Exchange model for the current book.
-     *
-     * @return \Kobens\Exchange\ExchangeInterface
      */
-    public function getExchange();
+    public function getExchange() : ExchangeInterface;
 
     /**
      * Return the Pair model for the current book.
-     *
-     * @return \Kobens\Exchange\Pair\PairInterface
      */
-    public function getPair();
+    public function getPair() : PairInterface;
 
     /**
      * Return the base currency for the current book.
-     *
-     * @return \Kobens\Currency\CurrencyInterface
      */
-    public function getBaseCurrency();
+    public function getBaseCurrency() : CurrencyInterface;
 
     /**
      * Return the quote currency for the current quote.
-     *
-     * @return \Kobens\Currency\CurrencyInterface
      */
-    public function getQuoteCurrency();
+    public function getQuoteCurrency() : CurrencyInterface;
 
     /**
      * Return the market's order book.
-     *
-     * @return array
      */
-    public function getBook();
+    public function getBook() : array;
 
     /**
      * Get the remaining amount on the book for the given maker side and quote.
-     *
-     * @param string $makerSide
-     * @param float $quote
      */
-    public function getRemaining(string $makerSide, $quote);
+    public function getRemaining(string $makerSide, string $quote) : string;
 
     /**
-     * @return \Kobens\Exchange\Book\Trade\TradeInterface
+     * Return details about the last trade that occurred on book
      */
-    public function getLastTrade();
+    public function getLastTrade() : TradeInterface;
 
     /**
      * Return the current asking price on the order book.
-     *
-     * @return string
      */
     public function getAskPrice() : string;
 
     /**
      * Return the current bid price
-     *
-     * @return string
      */
     public function getBidPrice() : string;
 
     /**
-     * @return string
+     * Return the book's spread
      */
     public function getSpread() : string;
 
