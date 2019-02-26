@@ -1,10 +1,5 @@
 <?php
-/**
- * TODO: Re-asses the setters here.
- *      - We have an abstract book, and the exchange specific abstract book extends core abstract book...
- *      - No public setters should be necessary.
- *      - Book internally sets the data and public functions fetch it for other processes.
- */
+
 namespace Kobens\Exchange\Book;
 
 use Kobens\Currency\CurrencyInterface;
