@@ -2,16 +2,13 @@
 
 namespace Kobens\Exchange\Book;
 
-use Kobens\Currency\CurrencyInterface;
 use Kobens\Exchange\ExchangeInterface;
 use Kobens\Exchange\Pair\PairInterface;
 use Kobens\Exchange\Exception\ClosedBookException;
+use Kobens\Exchange\Exception\Exception;
 use Zend\Cache\Storage\StorageInterface;
 
-/**
- * @todo Reconsider this whole trait.... @see https://codereview.stackexchange.com/a/74195/193755
- */
-trait BookTraits
+class Utilities
 {
     /**
      * Time (in seconds) to consider a book closed if
@@ -20,13 +17,6 @@ trait BookTraits
      * @var integer
      */
     protected $bookExpiration = 5;
-
-    /**
-     * The exchange market's order book
-     *
-     * @var array
-     */
-    protected $book;
 
     /**
      * @var ExchangeInterface
@@ -58,9 +48,14 @@ trait BookTraits
      */
     protected $cacheKeyLastTrade;
 
-    public function getExchange() : ExchangeInterface
+    public function __construct(
+        ExchangeInterface $exchange,
+        string $pairKey
+    )
     {
-        return $this->exchange;
+        $this->exchange = $exchange;
+        $this->pair = $exchange->getPair($pairKey);
+        $this->cache = $exchange->getCache();
     }
 
     /**
@@ -71,7 +66,7 @@ trait BookTraits
         if (!$this->cacheKeyBook) {
             $this->cacheKeyBook = \implode('::', [
                 'kobens',
-                $this->getExchange()->getCacheKey(),
+                $this->exchange->getCacheKey(),
                 'market-book',
                 $this->pair->getPairSymbol(),
             ]);
@@ -84,9 +79,9 @@ trait BookTraits
         if (!$this->cacheKeyLastTrade) {
             $this->cacheKeyLastTrade = \implode('::', [
                 'kobens',
-                $this->getExchange()->getCacheKey(),
-                $this->getBaseCurrency()->getCacheIdentifier(),
-                $this->getQuoteCurrency()->getCacheIdentifier(),
+                $this->exchange->getCacheKey(),
+                $this->pair->getBaseCurrency()->getCacheIdentifier(),
+                $this->pair->getQuoteCurrency()->getCacheIdentifier(),
                 'last_trade'
             ]);
         }
@@ -98,9 +93,9 @@ trait BookTraits
         if (!$this->cacheKeyHeartbeat) {
             $this->cacheKeyHeartbeat = \implode('::', [
                 'kobens',
-                $this->getExchange()->getCacheKey(),
-                $this->getBaseCurrency()->getCacheIdentifier(),
-                $this->getQuoteCurrency()->getCacheIdentifier(),
+                $this->exchange->getCacheKey(),
+                $this->pair->getBaseCurrency()->getCacheIdentifier(),
+                $this->pair->getQuoteCurrency()->getCacheIdentifier(),
                 'heartbeat'
             ]);
         }
@@ -108,36 +103,26 @@ trait BookTraits
     }
 
     /**
-     * Return the market's order book.
-     *
      * @throws ClosedBookException
-     * @return mixed
+     * @throws Exception
      */
-    public function getBook()
+    public function getBook() : array
     {
-        if (!$this->cache->hasItem($this->getBookCacheKey())) {
+        $key = $this->getBookCacheKey();
+        if (!$this->cache->hasItem($key)) {
             throw new ClosedBookException('Market book is closed.');
         }
-        $meta = $this->cache->getMetadata($this->getBookCacheKey());
-        if (\time() - $meta['mtime'] >= $this->bookExpiration) {
+        $meta = $this->cache->getMetadata($key);
+        if ($meta === false) {
+            throw new Exception('Unabled to fetch from cache');
+        } elseif (\time() - $meta['mtime'] >= $this->bookExpiration) {
             throw new ClosedBookException('Market book has expired.');
         }
-        return $this->cache->getItem($this->getBookCacheKey());
-    }
-
-    public function getPair() : PairInterface
-    {
-        return $this->pair;
-    }
-
-    public function getBaseCurrency() : CurrencyInterface
-    {
-        return $this->pair->getBaseCurrency();
-    }
-
-    public function getQuoteCurrency() : CurrencyInterface
-    {
-        return $this->pair->getQuoteCurrency();
+        $book = $this->cache->getItem($key);
+        if ($book === null) {
+            throw new Exception('Unabled to fetch from cache');
+        }
+        return $this->cache->getItem($key);
     }
 
 }

@@ -3,13 +3,16 @@
 namespace Kobens\Exchange\Book\Keeper;
 
 use Kobens\Exchange\Book\Trade\TradeInterface;
+use Kobens\Exchange\Book\Utilities;
 use Kobens\Exchange\ExchangeInterface;
-use Kobens\Exchange\Pair\PairInterface;
 use Zend\Cache\Storage\StorageInterface;
 
 abstract class AbstractKeeper implements KeeperInterface
 {
-    use \Kobens\Exchange\Book\BookTraits;
+    /**
+     * @var Utilities
+     */
+    protected $util;
 
     /**
      * @var StorageInterface
@@ -17,19 +20,18 @@ abstract class AbstractKeeper implements KeeperInterface
     protected $cache;
 
     public function __construct(
-        ExchangeInterface $exchangeInterface,
-        PairInterface $pairInterface
+        ExchangeInterface $exchange,
+        string $pairKey
     ) {
-        $this->cache = $exchangeInterface->getCache();
-        $this->exchange = $exchangeInterface;
-        $this->pair = $pairInterface;
+        $this->cache = $exchange->getCache();
+        $this->exchange = $exchange;
+        $this->util = new Utilities($exchange, $pairKey);
     }
-
 
     protected function setPulse() : bool
     {
         return $this->cache->setItem(
-            $this->getHeartbeatCacheKey(),
+            $this->util->getHeartbeatCacheKey(),
             (string) \microtime(true)
         );
     }
@@ -54,7 +56,7 @@ abstract class AbstractKeeper implements KeeperInterface
     protected function populateBook(array $book) : void
     {
         $this->cache->setItem(
-            $this->getBookCacheKey(),
+            $this->util->getBookCacheKey(),
             $book
         );
     }
@@ -62,7 +64,7 @@ abstract class AbstractKeeper implements KeeperInterface
     protected function setLastTrade(TradeInterface $trade) : void
     {
         $this->cache->setItem(
-            $this->getLastTradeCacheKey(),
+            $this->util->getLastTradeCacheKey(),
             $trade
         );
     }
