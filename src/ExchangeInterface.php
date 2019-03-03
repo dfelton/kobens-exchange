@@ -2,11 +2,13 @@
 
 namespace Kobens\Exchange;
 
+use Zend\Cache\Storage\StorageInterface;
+
 interface ExchangeInterface
 {
     public function getCacheKey() : string;
 
-    public function getPair(string $key) : \Kobens\Exchange\Pair\PairInterface;
+    public function getPair(string $key) : PairInterface;
 
-    public function getCache() : \Zend\Cache\Storage\StorageInterface;
+    public function getCache() : StorageInterface;
 }

@@ -1,10 +1,8 @@
 <?php
 
-namespace Kobens\Exchange\Pair;
+namespace Kobens\Exchange;
 
-use Kobens\Currency\PairInterface as CurrencyPairInterface;
-
-interface PairInterface extends CurrencyPairInterface
+interface PairInterface extends \Kobens\Currency\PairInterface
 {
     public function getMinOrderSize() : string;
 

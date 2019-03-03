@@ -5,7 +5,7 @@ namespace Kobens\Exchange\Book;
 use Kobens\Currency\CurrencyInterface;
 use Kobens\Exchange\Book\Trade\TradeInterface;
 use Kobens\Exchange\ExchangeInterface;
-use Kobens\Exchange\Pair\PairInterface;
+use Kobens\Exchange\PairInterface;
 
 interface BookInterface
 {

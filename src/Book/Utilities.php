@@ -3,7 +3,7 @@
 namespace Kobens\Exchange\Book;
 
 use Kobens\Exchange\ExchangeInterface;
-use Kobens\Exchange\Pair\PairInterface;
+use Kobens\Exchange\PairInterface;
 use Kobens\Exchange\Exception\ClosedBookException;
 use Kobens\Exchange\Exception\Exception;
 use Zend\Cache\Storage\StorageInterface;

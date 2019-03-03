@@ -26,5 +26,13 @@
         "psr-4" : {
             "Kobens\\Exchange\\" : "src"
         }
+    },
+    "autoload-dev" : {
+        "psr-4" : {
+            "KobensTest\\Exchange\\" : "test"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
     }
 }
