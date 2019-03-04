@@ -58,7 +58,7 @@ abstract class AbstractKeeper implements KeeperInterface
         }
         $book = json_encode($book);
         $this->cache->setItem(
-            $this->getBookCacheKey(),
+            $this->util->getBookCacheKey(),
             $book
         );
     }
