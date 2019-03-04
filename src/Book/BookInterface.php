@@ -19,7 +19,7 @@ interface BookInterface
     /**
      * Return details about the last trade that occurred on book
      */
-    public function getLastTrade() : TradeInterface;
+    public function getLastTrade() : ?TradeInterface;
 
     /**
      * Return the current asking price on the order book.
