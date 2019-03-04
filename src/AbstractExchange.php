@@ -2,10 +2,11 @@
 
 namespace Kobens\Exchange;
 
+use Kobens\Exchange\Book\{Book, BookInterface};
 use Kobens\Exchange\Exception\Exception;
 use Zend\Cache\Storage\StorageInterface;
 
-abstract class AbstractExchange
+abstract class AbstractExchange implements ExchangeInterface
 {
     /**
      * @var StorageInterface
@@ -62,5 +63,11 @@ abstract class AbstractExchange
             ));
         }
         return $this->pairs[$key];
+    }
+
+
+    public function getBook(string $pairKey) : BookInterface
+    {
+        return new Book($this, $pairKey);
     }
 }
