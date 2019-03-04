@@ -50,7 +50,7 @@ abstract class AbstractKeeper implements KeeperInterface
     protected function updateBook(string $makerSide, string $quote, string $remaining) : void
     {
         $this->validateSide($makerSide);
-        $book = $this->getBook();
+        $book = $this->util->getBook();
         if (\floatval($remaining) === \floatval(0)) {
             unset($book[$makerSide][$quote]);
         } else {
