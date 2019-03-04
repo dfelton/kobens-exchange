@@ -131,6 +131,7 @@ class Utilities
         if ($book === null) {
             throw new Exception('Unabled to fetch from cache');
         }
+        $book = json_decode($book, true);
         return $book;
     }
 
