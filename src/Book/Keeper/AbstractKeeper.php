@@ -3,14 +3,18 @@
 namespace Kobens\Exchange\Book\Keeper;
 
 use Kobens\Exchange\Book\Trade\TradeInterface;
-use Kobens\Exchange\Book\Utilities;
-use Kobens\Exchange\ExchangeInterface;
+use Kobens\Exchange\Book\{BookTraits, Utilities};
+use Kobens\Exchange\{ExchangeInterface, PairInterface};
 use Zend\Cache\Storage\StorageInterface;
-use Kobens\Exchange\Book\BookTraits;
 
 abstract class AbstractKeeper implements KeeperInterface
 {
     use BookTraits;
+
+    /**
+     * @var StorageInterface
+     */
+    protected $cache;
 
     /**
      * @var Utilities
@@ -18,9 +22,9 @@ abstract class AbstractKeeper implements KeeperInterface
     protected $util;
 
     /**
-     * @var StorageInterface
+     * @var PairInterface
      */
-    protected $cache;
+    protected $pair;
 
     public function __construct(
         ExchangeInterface $exchange,
@@ -28,6 +32,7 @@ abstract class AbstractKeeper implements KeeperInterface
     ) {
         $this->cache = $exchange->getCache();
         $this->exchange = $exchange;
+        $this->pair = $exchange->getPair($pairKey);
         $this->util = new Utilities($exchange, $pairKey);
     }
 
