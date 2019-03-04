@@ -83,7 +83,7 @@ class Utilities
     public function getBookCacheKey() : string
     {
         if (!$this->cacheKeyBook) {
-            $this->cacheKeyBook = \implode(':', [
+            $this->cacheKeyBook = \implode('_', [
                 'kobens',
                 $this->exchange->getCacheKey(),
                 'market-book',
@@ -96,7 +96,7 @@ class Utilities
     public function getLastTradeCacheKey() : string
     {
         if (!$this->cacheKeyLastTrade) {
-            $this->cacheKeyLastTrade = \implode(':', [
+            $this->cacheKeyLastTrade = \implode('_', [
                 'kobens',
                 $this->exchange->getCacheKey(),
                 $this->pair->getBaseCurrency()->getCacheIdentifier(),
@@ -110,7 +110,7 @@ class Utilities
     public function getHeartbeatCacheKey() : string
     {
         if (!$this->cacheKeyHeartbeat) {
-            $this->cacheKeyHeartbeat = \implode(':', [
+            $this->cacheKeyHeartbeat = \implode('_', [
                 'kobens',
                 $this->exchange->getCacheKey(),
                 $this->pair->getBaseCurrency()->getCacheIdentifier(),
