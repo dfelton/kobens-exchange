@@ -7,7 +7,7 @@ use Kobens\Currency\Fiat\USD;
 
 class PairList
 {
-    public function getAllCurrencyPairs() : array
+    public function toArray()
     {
         return [
             [new BTC(), new ETH()],
@@ -35,6 +35,7 @@ class PairList
             [new ZEC(), new LTC()],
             [new ZEC(), new USD()],
         ];
+
     }
 
     public function getPairKeys()

@@ -6,9 +6,12 @@ use Kobens\Exchange\Book\Trade\TradeInterface;
 use Kobens\Exchange\Book\Utilities;
 use Kobens\Exchange\ExchangeInterface;
 use Zend\Cache\Storage\StorageInterface;
+use Kobens\Exchange\Book\BookTraits;
 
 abstract class AbstractKeeper implements KeeperInterface
 {
+    use BookTraits;
+
     /**
      * @var Utilities
      */
@@ -41,6 +44,7 @@ abstract class AbstractKeeper implements KeeperInterface
      */
     protected function updateBook(string $makerSide, string $quote, string $remaining) : void
     {
+        $this->validateSide($makerSide);
         $book = $this->getBook();
         if (\floatval($remaining) === \floatval(0)) {
             unset($book[$makerSide][$quote]);
@@ -55,6 +59,11 @@ abstract class AbstractKeeper implements KeeperInterface
 
     protected function populateBook(array $book) : void
     {
+        foreach (['bid', 'ask'] as $key) {
+            if (!isset($book[$key]) || !is_array($book[$key])) {
+                // @todo throw exception
+            }
+        }
         $this->cache->setItem(
             $this->util->getBookCacheKey(),
             $book

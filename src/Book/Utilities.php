@@ -16,7 +16,7 @@ class Utilities
      *
      * @var integer
      */
-    protected $bookExpiration = 5;
+    protected $pulseExpiration = 5;
 
     /**
      * @var ExchangeInterface
@@ -50,21 +50,40 @@ class Utilities
 
     public function __construct(
         ExchangeInterface $exchange,
-        string $pairKey
+        string $pairKey,
+        int $pulseExpiration = 5
     )
     {
+        if (!$pulseExpiration > 0) {
+            throw new Exception('Pulse expiration must be an integer greater than zero');
+        }
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
         $this->cache = $exchange->getCache();
+        $this->pulseExpiration = $pulseExpiration;
+    }
+
+    public function checkPulse() : void
+    {
+        $key = $this->getHeartbeatCacheKey();
+        if (!$this->cache->hasItem($key)) {
+            throw new ClosedBookException('Market book is closed.');
+        }
+        $meta = $this->cache->getMetadata($key);
+        if ($meta === false) {
+            throw new Exception('Unabled to fetch from cache');
+        } elseif (\time() - $meta['mtime'] >= $this->pulseExpiration) {
+            throw new ClosedBookException('Market book has expired.');
+        }
     }
 
     /**
      * Return the cache key for the current book
      */
-    protected function getBookCacheKey() : string
+    public function getBookCacheKey() : string
     {
         if (!$this->cacheKeyBook) {
-            $this->cacheKeyBook = \implode('::', [
+            $this->cacheKeyBook = \implode(':', [
                 'kobens',
                 $this->exchange->getCacheKey(),
                 'market-book',
@@ -74,10 +93,10 @@ class Utilities
         return $this->cacheKeyBook;
     }
 
-    protected function getLastTradeCacheKey() : string
+    public function getLastTradeCacheKey() : string
     {
         if (!$this->cacheKeyLastTrade) {
-            $this->cacheKeyLastTrade = \implode('::', [
+            $this->cacheKeyLastTrade = \implode(':', [
                 'kobens',
                 $this->exchange->getCacheKey(),
                 $this->pair->getBaseCurrency()->getCacheIdentifier(),
@@ -88,10 +107,10 @@ class Utilities
         return $this->cacheKeyLastTrade;
     }
 
-    protected function getHeartbeatCacheKey() : string
+    public function getHeartbeatCacheKey() : string
     {
         if (!$this->cacheKeyHeartbeat) {
-            $this->cacheKeyHeartbeat = \implode('::', [
+            $this->cacheKeyHeartbeat = \implode(':', [
                 'kobens',
                 $this->exchange->getCacheKey(),
                 $this->pair->getBaseCurrency()->getCacheIdentifier(),
@@ -103,26 +122,16 @@ class Utilities
     }
 
     /**
-     * @throws ClosedBookException
      * @throws Exception
      */
     public function getBook() : array
     {
-        $key = $this->getBookCacheKey();
-        if (!$this->cache->hasItem($key)) {
-            throw new ClosedBookException('Market book is closed.');
-        }
-        $meta = $this->cache->getMetadata($key);
-        if ($meta === false) {
-            throw new Exception('Unabled to fetch from cache');
-        } elseif (\time() - $meta['mtime'] >= $this->bookExpiration) {
-            throw new ClosedBookException('Market book has expired.');
-        }
-        $book = $this->cache->getItem($key);
+        $this->checkPulse();
+        $book = $this->cache->getItem($this->getBookCacheKey());
         if ($book === null) {
             throw new Exception('Unabled to fetch from cache');
         }
-        return $this->cache->getItem($key);
+        return $book;
     }
 
 }
