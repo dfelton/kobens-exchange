@@ -56,7 +56,7 @@ abstract class AbstractKeeper implements KeeperInterface
         } else {
             $book[$makerSide][$quote] = $remaining;
         }
-        $book = json_encode($book);
+        $book = \json_encode($book);
         $this->cache->setItem(
             $this->util->getBookCacheKey(),
             $book
@@ -70,7 +70,7 @@ abstract class AbstractKeeper implements KeeperInterface
                 // @todo throw exception
             }
         }
-        $book = json_encode($book);
+        $book = \json_encode($book);
         $this->cache->setItem(
             $this->util->getBookCacheKey(),
             $book
