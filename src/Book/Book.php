@@ -63,7 +63,8 @@ class Book implements BookInterface
     {
         $orders = $this->getRawBookData()['ask'];
         \ksort($orders);
-        $price = \reset($orders);
+        $price = \array_keys($orders);
+        $price = \reset($price);
         if ($price === false) {
             // @todo throw exception
         }
@@ -83,7 +84,8 @@ class Book implements BookInterface
     {
         $orders = $this->getRawBookData()['bid'];
         \ksort($orders);
-        $price = \end($orders);
+        $price = \array_keys($orders);
+        $price = \end($price);
         if ($price === false) {
             // @todo throw exception
         }
@@ -91,4 +93,5 @@ class Book implements BookInterface
     }
 
 }
+
 

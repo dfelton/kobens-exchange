@@ -16,7 +16,7 @@ class Utilities
      *
      * @var integer
      */
-    protected $pulseExpiration = 5;
+    protected $pulseExpiration;
 
     /**
      * @var ExchangeInterface
@@ -51,7 +51,7 @@ class Utilities
     public function __construct(
         ExchangeInterface $exchange,
         string $pairKey,
-        int $pulseExpiration = 5
+        int $pulseExpiration = 6
     )
     {
         if (!$pulseExpiration > 0) {
