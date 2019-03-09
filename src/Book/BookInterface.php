@@ -36,4 +36,6 @@ interface BookInterface
      */
     public function getSpread() : string;
 
+    public function getSymbol() : string;
+
 }

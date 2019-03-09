@@ -92,6 +92,11 @@ class Book implements BookInterface
         return $price;
     }
 
+    public function getSymbol() : string
+    {
+        return $this->pair->getPairSymbol();
+    }
+
 }
 
 
