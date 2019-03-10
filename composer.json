@@ -14,12 +14,17 @@
     "repositories": [
         {
             "type": "git",
+            "url": "https://github.com/dfelton/kobens-core"
+        },
+        {
+            "type": "git",
             "url": "https://github.com/dfelton/kobens-currency"
         }
     ],
     "require": {
         "php": "^7.3",
         "kobens/kobens-currency": "^1.0",
+        "kobens/kobens-core": "dev-master",
         "zendframework/zend-cache": "^2.8"
     },
     "autoload": {

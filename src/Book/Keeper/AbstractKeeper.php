@@ -2,6 +2,7 @@
 
 namespace Kobens\Exchange\Book\Keeper;
 
+use Kobens\Core\Cache;
 use Kobens\Exchange\Book\Trade\TradeInterface;
 use Kobens\Exchange\Book\{BookTraits, Utilities};
 use Kobens\Exchange\{ExchangeInterface, PairInterface};
@@ -30,7 +31,7 @@ abstract class AbstractKeeper implements KeeperInterface
         ExchangeInterface $exchange,
         string $pairKey
     ) {
-        $this->cache = $exchange->getCache();
+        $this->cache = (new Cache())->getCache();
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
         $this->util = new Utilities($exchange, $pairKey);

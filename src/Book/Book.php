@@ -4,6 +4,7 @@ namespace Kobens\Exchange\Book;
 use Kobens\Exchange\Book\Trade\TradeInterface;
 use Kobens\Exchange\{ExchangeInterface, PairInterface};
 use Zend\Cache\Storage\StorageInterface;
+use Kobens\Core\Cache;
 
 class Book implements BookInterface
 {
@@ -34,7 +35,7 @@ class Book implements BookInterface
         string $pairKey
     )
     {
-        $this->cache = $exchange->getCache();
+        $this->cache = (new Cache())->getCache();
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
         $this->util = new Utilities($exchange, $pairKey);

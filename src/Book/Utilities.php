@@ -7,6 +7,7 @@ use Kobens\Exchange\PairInterface;
 use Kobens\Exchange\Exception\ClosedBookException;
 use Kobens\Exchange\Exception\Exception;
 use Zend\Cache\Storage\StorageInterface;
+use Kobens\Core\Cache;
 
 class Utilities
 {
@@ -59,7 +60,7 @@ class Utilities
         }
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
-        $this->cache = $exchange->getCache();
+        $this->cache = (new Cache())->getCache();
         $this->pulseExpiration = $pulseExpiration;
     }
 
