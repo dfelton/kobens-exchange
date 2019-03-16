@@ -36,7 +36,7 @@ class Buyer extends Command
     {
         $this->simpleRepeater = new SimpleRepeater();
         $this->exchangeMapper = new Mapper();
-        $this->log = new Logger();
+        $this->log = new Logger('simple_trader_buyer');
         $this->log->pushHandler(new StreamHandler(
             \sprintf(
                 '%s/var/log/exchange_simple_trader_buyer_%d.log',
