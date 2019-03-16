@@ -25,6 +25,7 @@
         "php": "^7.3",
         "kobens/kobens-currency": "^1.0",
         "kobens/kobens-core": "dev-master",
+        "monolog/monolog": "2.0.0-beta1",
         "symfony/console": "^4.2",
         "zendframework/zend-cache": "^2.8"
     },
