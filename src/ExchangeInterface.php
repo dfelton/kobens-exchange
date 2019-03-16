@@ -14,4 +14,6 @@ interface ExchangeInterface
     public function getBookKeeper(string $key) : KeeperInterface;
 
     public function getBook(string $key) : BookInterface;
+
+    public function placeOrder(string $side, string $symbol, string $amount, string $price) : string;
 }
