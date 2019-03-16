@@ -3,11 +3,14 @@
 namespace Kobens\Exchange\Command\Command\SimpleTrader;
 
 use Kobens\Core\Command\Traits\Traits;
+use Kobens\Core\Config;
+use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Kobens\Exchange\Exchange\Mapper;
 use Zend\Db\ResultSet\ResultSet;
 
 class Buyer extends Command
@@ -33,14 +36,31 @@ class Buyer extends Command
     {
         $this->simpleRepeater = new SimpleRepeater();
         $this->exchangeMapper = new Mapper();
+        $this->log = new Logger();
+        $this->log->pushHandler(new StreamHandler(
+            \sprintf(
+                '%s/var/log/exchange_simple_trader_buyer_%d.log',
+                (new Config())->getRoot(),
+                \getmypid()
+            ),
+            Logger::INFO
+        ));
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->loop($output);
+        $loop = true;
+        do {
+            try {
+                $this->main($output);
+            } catch (\Exception $e) {
+                $loop = false;
+                $this->logException($e);
+            }
+        } while ($loop);
     }
 
-    protected function loop(OutputInterface $output)
+    protected function main(OutputInterface $output)
     {
         $resultSet = $this->simpleRepeater->getOrdersToBuy();
         if ($resultSet->count() === 0) {
@@ -72,6 +92,16 @@ class Buyer extends Command
             $output->write('.');
             \sleep(1);
         }
+    }
+
+    protected function logException(\Exception $e) : void
+    {
+        $this->log->warning(\json_encode([
+            'errClass' => \get_class($e),
+            'errCode' => $e->getCode(),
+            'errMessage' => $e->getMessage(),
+            'errTrace' => $e->getTraceAsString(),
+        ]));
     }
 
 }
