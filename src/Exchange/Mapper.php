@@ -58,8 +58,11 @@ class Mapper
         }
     }
 
-    protected function getClassMap(string $key) : string
+    public function getExchange(string $key) : ExchangeInterface
     {
-
+        if (!isset(static::$mappings[$key])) {
+            throw new Exception(\sprintf('Invalid Exchange Key "%s"', $key));
+        }
+        return new static::$mappings[$key]();
     }
 }
