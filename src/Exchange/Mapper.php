@@ -12,7 +12,7 @@ class Mapper
      */
     protected static $mappings = [];
 
-    public function __construct(array $mappings = null)
+    public function __construct(array $mappings = [])
     {
         if ($mappings !== [] && static::$mappings !== []) {
             throw new \LogicException(\sprintf(
