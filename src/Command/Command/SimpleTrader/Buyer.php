@@ -20,6 +20,8 @@ class Buyer extends Command
     protected $simpleRepeater;
 
     protected $hasReportedUpToDate = false;
+    protected $secondsToClearScreen = 5;
+    protected $secondsSinceClear = 0;
 
     protected function configure()
     {
@@ -42,13 +44,18 @@ class Buyer extends Command
     {
         $resultSet = $this->simpleRepeater->getOrdersToBuy();
         if ($resultSet->count() === 0) {
-            if ($this->hasReportedUpToDate === false) {
+            if (   $this->hasReportedUpToDate === false
+                || $this->secondsSinceClear > $this->secondsToClearScreen
+            ) {
+                $this->hasReportedUpToDate = true;
+                $this->secondsSinceClear = 0;
                 $this->clearTerminal($output);
                 $output->write('All active buy orders up to date.');
-                $this->hasReportedUpToDate = true;
             }
+            $this->secondsSinceClear++;
         } else {
             $this->hasReportedUpToDate = false;
+            $this->secondsSinceClear = 0;
             $this->clearTerminal($output);
             $output->write('Detected buy orders ready to place.');
             $this->placeOrders($resultSet, $output);
