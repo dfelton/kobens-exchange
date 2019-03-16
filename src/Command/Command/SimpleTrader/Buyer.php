@@ -20,11 +20,17 @@ class Buyer extends Command
     /**
      * @var SimpleRepeater
      */
-    protected $simpleRepeater;
+    protected $repeater;
 
+    /**
+     * @var Mapper
+     */
+    protected $mapper;
+
+    /**
+     * @var bool
+     */
     protected $hasReportedUpToDate = false;
-    protected $secondsToClearScreen = 5;
-    protected $secondsSinceClear = 0;
 
     protected function configure()
     {
@@ -34,14 +40,13 @@ class Buyer extends Command
 
     protected function initialize($input, $output)
     {
-        $this->simpleRepeater = new SimpleRepeater();
-        $this->exchangeMapper = new Mapper();
+        $this->repeater = new SimpleRepeater();
+        $this->mapper = new Mapper();
         $this->log = new Logger('simple_trader_buyer');
         $this->log->pushHandler(new StreamHandler(
             \sprintf(
-                '%s/var/log/exchange_simple_trader_buyer_%d.log',
-                (new Config())->getRoot(),
-                \getmypid()
+                '%s/var/log/simple_trade_repeater_buyer.log',
+                (new Config())->getRoot()
             ),
             Logger::INFO
         ));
@@ -62,33 +67,42 @@ class Buyer extends Command
 
     protected function main(OutputInterface $output)
     {
-        $resultSet = $this->simpleRepeater->getOrdersToBuy();
+        $resultSet = $this->repeater->getOrdersToBuy();
         if ($resultSet->count() === 0) {
-            if (   $this->hasReportedUpToDate === false
-                || $this->secondsSinceClear > $this->secondsToClearScreen
-            ) {
+            if ($this->hasReportedUpToDate === false) {
                 $this->hasReportedUpToDate = true;
-                $this->secondsSinceClear = 0;
-                $this->clearTerminal($output);
-                $output->write('All active buy orders up to date.');
+                $output->write(PHP_EOL.'All active buy orders up to date');
             }
-            $this->secondsSinceClear++;
         } else {
             $this->hasReportedUpToDate = false;
-            $this->secondsSinceClear = 0;
-            $this->clearTerminal($output);
-            $output->write('Detected buy orders ready to place.');
+            $output->write(PHP_EOL.'Detected buy orders ready to place');
             $this->placeOrders($resultSet, $output);
         }
-
         $output->write('.');
         \sleep(1);
     }
 
-    protected function placeOrders(ResultSet $resultSet, OutputInterface $output)
+    protected function placeOrders(ResultSet $orders, OutputInterface $output)
     {
-        for ($i=0;$i<=5;$i++) {
-            $output->write('.');
+        $output->write(PHP_EOL);
+        foreach ($orders as $order) {
+            $exchange = $this->mapper->getExchange($order->exchange);
+            // @todo if price is already cheaper than the simple repeater intended place limit order (non-maker-or-cancel) at price available
+            // @todo error handling
+            $exchangeOrderId = $exchange->placeOrder(
+                'buy',
+                $order->symbol,
+                $order->buy_amount,
+                $order->buy_price
+            );
+            $this->repeater->markBuyOrderPlaced($order->id, $order->exchange, $exchangeOrderId);
+            $output->writeln(\sprintf(
+                'Placed buy order on the "%s" pair for amount of "%s" at price of "%s" on "%s" exchange.',
+                $order->symbol,
+                $order->buy_amount,
+                $order->buy_price,
+                $order->exchange
+            ));
             \sleep(1);
         }
     }
