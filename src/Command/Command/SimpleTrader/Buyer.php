@@ -81,9 +81,8 @@ class Buyer extends Command
             $this->placeOrders($resultSet, $output);
         }
 
-        \sleep(1);
         $output->write('.');
-        $this->loop($output);
+        \sleep(1);
     }
 
     protected function placeOrders(ResultSet $resultSet, OutputInterface $output)
