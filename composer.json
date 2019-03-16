@@ -10,7 +10,7 @@
             "email": "darren_felton@hotmail.com"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "repositories": [
         {
             "type": "git",
@@ -25,6 +25,7 @@
         "php": "^7.3",
         "kobens/kobens-currency": "^1.0",
         "kobens/kobens-core": "dev-master",
+        "symfony/console": "^4.2",
         "zendframework/zend-cache": "^2.8"
     },
     "autoload": {
