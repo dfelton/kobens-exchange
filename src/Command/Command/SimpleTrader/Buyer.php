@@ -78,7 +78,9 @@ class Buyer extends Command
             $output->write(PHP_EOL.'Detected buy orders ready to place');
             $this->placeOrders($resultSet, $output);
         }
-        $output->write('.');
+        if (\time() % 10 === 0) {
+            $output->write('.');
+        }
         \sleep(1);
     }
 
