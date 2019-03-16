@@ -42,8 +42,8 @@ class Buyer extends Command
     {
         $resultSet = $this->simpleRepeater->getOrdersToBuy();
         if ($resultSet->count() === 0) {
-            $this->clearTerminal($output);
             if ($this->hasReportedUpToDate === false) {
+                $this->clearTerminal($output);
                 $output->write('All active buy orders up to date.');
                 $this->hasReportedUpToDate = true;
             }
@@ -63,6 +63,7 @@ class Buyer extends Command
     {
         for ($i=0;$i<=5;$i++) {
             $output->write('.');
+            \sleep(1);
         }
     }
 
