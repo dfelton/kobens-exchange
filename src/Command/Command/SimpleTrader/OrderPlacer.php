@@ -76,6 +76,7 @@ class OrderPlacer extends Command
         foreach ($this->repeater->getOrdersToPlace() as $order) {
             $exchangeOrderId = $this->place($order);
             $this->updateSimpleTrader($order, $exchangeOrderId);
+            $this->reportOrder($output, $order);
             $bool = true;
             \sleep(1);
         }
