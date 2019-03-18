@@ -116,12 +116,10 @@ class OrderPlacer extends Command
 
     protected function logException(\Exception $e) : void
     {
-        $this->log->warning(\json_encode([
-            'errClass' => \get_class($e),
-            'errCode' => $e->getCode(),
-            'errMessage' => $e->getMessage(),
-            'errTrace' => $e->getTraceAsString(),
-        ]));
+        $this->log->error('Error Class: '.\get_class($e));
+        $this->log->error('Error Code: '.$e->getCode());
+        $this->log->error('Error Message: '.$e->getMessage());
+        $this->log->error('Stack Trace: '.$e->getTraceAsString());
     }
 
 }
