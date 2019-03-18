@@ -54,9 +54,9 @@ class NewOrder
             case 'exchange':
                 return $this->exchange;
             case 'side':
-                return $this->symbol;
-            case 'side':
                 return $this->side;
+            case 'symbol':
+                return $this->symbol;
             case 'amount':
                 return $this->amount;
             case 'price':
