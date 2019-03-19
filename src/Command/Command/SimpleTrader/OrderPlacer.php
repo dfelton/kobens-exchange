@@ -17,6 +17,11 @@ use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 class OrderPlacer extends Command
 {
     /**
+     * @var Logger
+     */
+    protected $log;
+
+    /**
      * @var SimpleRepeater
      */
     protected $repeater;
