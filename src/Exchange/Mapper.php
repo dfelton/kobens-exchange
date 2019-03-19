@@ -65,4 +65,9 @@ class Mapper
         }
         return new static::$mappings[$key]();
     }
+
+    public function getKeys() : array
+    {
+        return array_keys(static::$mappings);
+    }
 }
