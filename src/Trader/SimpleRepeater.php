@@ -6,7 +6,7 @@ use Kobens\Core\Db;
 use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\ResultSet\ResultSetInterface;
-use Kobens\Exchange\Trader\SimpleRepeater\NewOrder;
+use Kobens\Exchange\Trader\SimpleRepeater\{NewOrder, OrderId};
 
 class SimpleRepeater
 {
@@ -31,6 +31,17 @@ class SimpleRepeater
         foreach ($this->getSells() as $row) {
             yield new NewOrder($row->id, $row->exchange, 'sell', $row->symbol, $row->sell_amount, $row->sell_price);
             unset($row);
+        }
+    }
+
+    public function getAllActiveOrderIds(string $exchange) : \Generator
+    {
+        $records = $this->getTable()->select(function(Select $select) use ($exchange) {
+            $select->columns(['last_order_id', 'exchange', 'status']);
+            $select->where->equalTo('exchange', $exchange);
+        });
+        foreach ($records as $record) {
+            yield new OrderId($record['last_order_id'], $record['exchange'], $record['status']);
         }
     }
 
