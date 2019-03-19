@@ -78,7 +78,8 @@ class OrderPlacer extends Command
             $this->updateSimpleTrader($order, $exchangeOrderId);
             $this->reportOrder($output, $order);
             $bool = true;
-            \sleep(1);
+            // @todo fetch exchange rate limit (add to interface); compare request time, dynamically determine sleep (if any)
+            \usleep(150000);
         }
         return $bool;
     }
