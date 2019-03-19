@@ -96,6 +96,17 @@ class SimpleRepeater
         }
     }
 
+    public function markDisabled(int $id) : void
+    {
+        $affectedRows = $this->getTable()->update(
+            ['status' => self::STATUS_DISABLED],
+            ['id' => $id]
+        );
+        if (!$affectedRows !== 1) {
+            // @todo
+        }
+    }
+
     protected function getTable() : TableGateway
     {
         return new TableGateway(static::TABLE_NAME, (new Db())->getAdapter());

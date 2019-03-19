@@ -12,6 +12,7 @@ use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 
 class OrderPlacer extends Command
 {
@@ -74,10 +75,16 @@ class OrderPlacer extends Command
         $bool = false;
         /** @var NewOrder $order */
         foreach ($this->repeater->getOrdersToPlace() as $order) {
-            $exchangeOrderId = $this->place($order);
-            $this->updateSimpleTrader($order, $exchangeOrderId);
-            $this->reportOrder($output, $order);
-            $bool = true;
+            // @todo fetch book, check price, don't attempt to place if not appropriate
+            try {
+                $exchangeOrderId = $this->place($order);
+                $this->updateSimpleTrader($order, $exchangeOrderId);
+                $this->reportOrder($output, $order);
+                $bool = true;
+            } catch (MakerOrCancelWouldTakeException $e) {
+                // @todo remove once checking of price is in place
+                $this->repeater->markDisabled($order->id);
+            }
             // @todo fetch exchange rate limit (add to interface); compare request time, dynamically determine sleep (if any)
             \usleep(150000);
         }
