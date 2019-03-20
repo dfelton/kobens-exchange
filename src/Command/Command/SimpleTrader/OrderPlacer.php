@@ -17,9 +17,9 @@ use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 class OrderPlacer extends Command
 {
     /**
-     * @var Logger
+     * @var Logger[]
      */
-    protected $log;
+    protected $log = [];
 
     /**
      * @var SimpleRepeater
@@ -41,10 +41,19 @@ class OrderPlacer extends Command
     {
         $this->repeater = new SimpleRepeater();
         $this->mapper = new Mapper();
-        $this->log = new Logger('simple_trade_repeater');
-        $this->log->pushHandler(new StreamHandler(
+        $this->log['main'] = new Logger('simple_trade_repeater');
+        $this->log['main']->pushHandler(new StreamHandler(
             \sprintf(
                 '%s/var/log/simple_trade_repeater.log',
+                (new Config())->getRoot()
+            ),
+            Logger::INFO
+        ));
+
+        $this->log['curlTimer'] = new Logger('ordersPerSecond');
+        $this->log['curlTimer']->pushHandler(new StreamHandler(
+            \sprintf(
+                '%s/var/log/ordersPerSecond.log',
                 (new Config())->getRoot()
             ),
             Logger::INFO
@@ -78,9 +87,11 @@ class OrderPlacer extends Command
     protected function main(OutputInterface $output) : bool
     {
         $bool = false;
+        $time = $i = 0;
         /** @var NewOrder $order */
         foreach ($this->repeater->getOrdersToPlace() as $order) {
             // @todo fetch book, check price, don't attempt to place if not appropriate
+            $time -= \microtime(true);
             try {
                 $exchangeOrderId = $this->place($order);
                 $this->updateSimpleTrader($order, $exchangeOrderId);
@@ -90,8 +101,11 @@ class OrderPlacer extends Command
                 // @todo remove once checking of price is in place
                 $this->repeater->markDisabled($order->id);
             }
+            $time += \microtime(true);
+            $ordersPerSecond = \round(1/($time/++$i), 2);
+            $this->log['curlTimer']->notice($ordersPerSecond);
             // @todo fetch exchange rate limit (add to interface); compare request time, dynamically determine sleep (if any)
-            \usleep(150000);
+            \usleep(050000);
         }
         return $bool;
     }
@@ -130,10 +144,10 @@ class OrderPlacer extends Command
 
     protected function logException(\Exception $e) : void
     {
-        $this->log->error('Error Class: '.\get_class($e));
-        $this->log->error('Error Code: '.$e->getCode());
-        $this->log->error('Error Message: '.$e->getMessage());
-        $this->log->error('Stack Trace: '.$e->getTraceAsString());
+        $this->log['main']->error('Error Class: '.\get_class($e));
+        $this->log['main']->error('Error Code: '.$e->getCode());
+        $this->log['main']->error('Error Message: '.$e->getMessage());
+        $this->log['main']->error('Stack Trace: '.$e->getTraceAsString());
     }
 
 }
