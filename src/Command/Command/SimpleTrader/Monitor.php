@@ -104,6 +104,7 @@ class Monitor extends Command
                     throw new \Exception(\sprintf('Unknown Order Status. Simple Repeater ID "%s"', $order->orderId));
                 }
 
+                // @todo the exchange interface could have fetched from local cache. Remove sleep responsibility here and put it on the interface
                 // Sleep between asking for order status
                 \sleep(1);
             }
