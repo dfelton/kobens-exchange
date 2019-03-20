@@ -56,7 +56,8 @@ class Monitor extends Command
                     $reported = false;
                 }
                 if (!$reported) {
-                    $output->write(PHP_EOL.'All active orders up to date');
+                    $output->write(PHP_EOL);
+                    $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
                 }
                 if (\time() % 10 === 0) {
@@ -90,8 +91,9 @@ class Monitor extends Command
                     switch ($order->status) {
                         case SimpleRepeater::STATUS_BUY_PLACED:
                             $this->repeater->markBuyFilled($order->orderId, $order->exchange);
-                            $output->write(PHP_EOL.\sprintf(
-                                "%s \tBuy order %s from the %s exchange marked filled",
+                            $output->write(PHP_EOL);
+                            $output->write(\sprintf(
+                                "%s\tBuy order %s from the %s exchange marked filled",
                                 $this->getNow(),
                                 $order->exchangeOrderId,
                                 ucwords($order->exchange)
@@ -99,8 +101,9 @@ class Monitor extends Command
                             break;
                         case SimpleRepeater::STATUS_SELL_PLACED:
                             $this->repeater->markSellFilled($order->orderId, $order->exchange);
-                            $output->write(PHP_EOL.\sprintf(
-                                'Sell order "%s" from the %s exchange marked filled',
+                            $output->write(PHP_EOL);
+                            $output->write(\sprintf(
+                                "%s\tSell order %s from the %s exchange marked filled",
                                 $order->exchangeOrderId,
                                 ucwords($order->exchange)
                             ));
