@@ -5,7 +5,6 @@ namespace Kobens\Exchange\Command\Command\SimpleTrader;
 use Kobens\Core\Config;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
-use Kobens\Exchange\Trader\SimpleRepeater\NewOrder;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
@@ -110,21 +109,6 @@ class Monitor extends Command
             }
         }
         return $bool;
-    }
-
-    protected function place(NewOrder $order) : string
-    {
-        $exchange = $this->mapper->getExchange($order->exchange);
-        return $exchange->placeOrder($order->side, $order->symbol, $order->amount, $order->price);
-    }
-
-    protected function reportOrder(OutputInterface $output, NewOrder $order) : void
-    {
-        $output->write(PHP_EOL);
-        $output->write(\sprintf(
-            'Placing %s order on the %s pair for amount of "%s" at price of "%s" on "%s" exchange.',
-            $order->side, $order->symbol, $order->amount, $order->price, \ucwords($order->exchange)
-        ));
     }
 
     protected function logException(\Exception $e) : void
