@@ -83,7 +83,7 @@ class Monitor extends Command
                 if (\in_array($order->orderId, $aliveOrders)) {
                     continue;
                 }
-                $metaData = $exchange->getOrderMetaData($order->orderId);
+                $metaData = $exchange->getOrderMetaData($order->exchangeOrderId);
                 if ($exchange->isOrderFilled($metaData)) {
                     // @todo get this from the exchange's order meta? rather than last order status here? maybe not due to inconsistent formats across exchanges...
                     switch ($order->status) {
