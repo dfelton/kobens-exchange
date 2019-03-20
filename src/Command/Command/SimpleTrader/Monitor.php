@@ -87,9 +87,19 @@ class Monitor extends Command
                     switch ($order->status) {
                         case SimpleRepeater::STATUS_BUY_PLACED:
                             $this->repeater->markBuyFilled($order->orderId, $order->exchange);
+                            $output->write(PHP_EOL.\sprintf(
+                                'Buy order "%s" from the %s exchange marked filled',
+                                $order->exchangeOrderId,
+                                ucwords($order->exchange)
+                            ));
                             break;
                         case SimpleRepeater::STATUS_SELL_PLACED:
                             $this->repeater->markSellFilled($order->orderId, $order->exchange);
+                            $output->write(PHP_EOL.\sprintf(
+                                'Sell order "%s" from the %s exchange marked filled',
+                                $order->exchangeOrderId,
+                                ucwords($order->exchange)
+                            ));
                             break;
                         default:
                             throw new \Exception(\sprintf('Unknown order status. Simple Repeater ID "%"', $order->orderId));
