@@ -76,9 +76,10 @@ class Monitor extends Command
         foreach ($this->mapper->getKeys() as $key) {
             $exchange = $this->mapper->getExchange($key);
             $aliveOrders = $exchange->getActiveOrderIds();
+            $activeSimpleRepeaters = $this->repeater->getAllActiveOrderIds($key);
 
             /** @var \Kobens\Exchange\Trader\SimpleRepeater\OrderId $order */
-            foreach ($this->repeater->getAllActiveOrderIds($key) as $order) {
+            foreach ($activeSimpleRepeaters as $order) {
 
                 if (\in_array($order->exchangeOrderId, $aliveOrders)) {
                     continue;
