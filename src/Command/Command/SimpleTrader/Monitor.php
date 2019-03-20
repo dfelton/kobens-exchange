@@ -80,7 +80,7 @@ class Monitor extends Command
             /** @var \Kobens\Exchange\Trader\SimpleRepeater\OrderId $order */
             foreach ($this->repeater->getAllActiveOrderIds($key) as $order) {
 
-                if (\in_array($order->orderId, $aliveOrders)) {
+                if (\in_array($order->exchangeOrderId, $aliveOrders)) {
                     continue;
                 }
                 $metaData = $exchange->getOrderMetaData($order->exchangeOrderId);
@@ -94,7 +94,7 @@ class Monitor extends Command
                             $this->repeater->markSellFilled($order->orderId, $order->exchange);
                             break;
                         default:
-                            throw new \Exception(\sprintf('Unknown order status. Exchange Order ID "%"', $order->orderId));
+                            throw new \Exception(\sprintf('Unknown order status. Simple Repeater ID "%"', $order->orderId));
                             break;
                     }
 
@@ -102,7 +102,7 @@ class Monitor extends Command
                     $this->repeater->markDisabled($order->orderId);
                 } else {
                     // if it is not alive, it is not filled, it is not cancelled, then what is it?
-                    throw new \Exception(\sprintf('Unknown Order Status. Order ID "%s"', $order->orderId));
+                    throw new \Exception(\sprintf('Unknown Order Status. Simple Repeater ID "%s"', $order->orderId));
                 }
 
                 // Sleep between asking for order status
