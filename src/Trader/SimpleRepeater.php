@@ -39,6 +39,7 @@ class SimpleRepeater
         $records = $this->getTable()->select(function(Select $select) use ($exchange) {
             $select->columns(['id', 'last_order_id', 'exchange', 'status']);
             $select->where->equalTo('exchange', $exchange);
+            $select->where->in('status', [self::STATUS_BUY_PLACED, self::STATUS_SELL_PLACED]);
         });
         foreach ($records as $row) {
             yield new OrderId($row['id'], $row['last_order_id'], $row['exchange'], $row['status']);
