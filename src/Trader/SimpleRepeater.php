@@ -37,11 +37,11 @@ class SimpleRepeater
     public function getAllActiveOrderIds(string $exchange) : \Generator
     {
         $records = $this->getTable()->select(function(Select $select) use ($exchange) {
-            $select->columns(['last_order_id', 'exchange', 'status']);
+            $select->columns(['id', 'last_order_id', 'exchange', 'status']);
             $select->where->equalTo('exchange', $exchange);
         });
-        foreach ($records as $record) {
-            yield new OrderId($record['last_order_id'], $record['exchange'], $record['status']);
+        foreach ($records as $row) {
+            yield new OrderId($row['id'], $row['last_order_id'], $row['exchange'], $row['status']);
         }
     }
 

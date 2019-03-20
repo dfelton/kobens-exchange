@@ -6,12 +6,14 @@ use Kobens\Exchange\Exception\InvalidArgumentException;
 
 /**
  * @property-read int $orderId
+ * @property-read string $exchangeOrderId
  * @property-read string $exchange
  * @property-read string $status
  */
 class OrderId
 {
     private $orderId;
+    private $exchangeOrderId;
     private $exchange;
     private $status;
 
@@ -19,9 +21,10 @@ class OrderId
      * @param int $orderId
      * @param string $exchange
      */
-    public function __construct(int $orderId, string $exchange, string $status)
+    public function __construct(int $orderId, string $exchangeOrderId, string $exchange, string $status)
     {
         $this->orderId = $orderId;
+        $this->exchangeOrderId = $exchangeOrderId;
         $this->exchange = $exchange;
         $this->status = $status;
     }
@@ -38,6 +41,8 @@ class OrderId
         switch ($name) {
             case 'orderId':
                 return $this->orderId;
+            case 'exchangeOrderId':
+                return $this->exchangeOrderId;
             case 'exchange':
                 return $this->exchange;
             case 'status':
