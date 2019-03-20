@@ -2,6 +2,7 @@
 
 namespace Kobens\Exchange\Command\Command\SimpleTrader;
 
+use Kobens\Core\Command\Traits\Traits;
 use Kobens\Core\Config;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
@@ -13,6 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Monitor extends Command
 {
+    use Traits;
+
     /**
      * @var SimpleRepeater
      */
@@ -88,7 +91,8 @@ class Monitor extends Command
                         case SimpleRepeater::STATUS_BUY_PLACED:
                             $this->repeater->markBuyFilled($order->orderId, $order->exchange);
                             $output->write(PHP_EOL.\sprintf(
-                                'Buy order "%s" from the %s exchange marked filled',
+                                "%s \tBuy order %s from the %s exchange marked filled",
+                                $this->getNow(),
                                 $order->exchangeOrderId,
                                 ucwords($order->exchange)
                             ));

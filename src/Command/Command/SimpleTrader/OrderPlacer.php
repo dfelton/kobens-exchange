@@ -2,7 +2,9 @@
 
 namespace Kobens\Exchange\Command\Command\SimpleTrader;
 
+use Kobens\Core\Command\Traits\Traits;
 use Kobens\Core\Config;
+use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 use Kobens\Exchange\Exception\LogicException;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
@@ -12,10 +14,11 @@ use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 
 class OrderPlacer extends Command
 {
+    use Traits;
+
     /**
      * @var Logger[]
      */
@@ -70,7 +73,8 @@ class OrderPlacer extends Command
                     $reported = false;
                 }
                 if (!$reported) {
-                    $output->write(PHP_EOL.'All active orders up to date');
+                    $output->write(PHP_EOL);
+                    $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
                 }
                 if (\time() % 10 === 0) {
@@ -137,8 +141,8 @@ class OrderPlacer extends Command
     {
         $output->write(PHP_EOL);
         $output->write(\sprintf(
-            'Placing %s order on the %s pair for amount of "%s" at price of "%s" on "%s" exchange.',
-            $order->side, $order->symbol, $order->amount, $order->price, \ucwords($order->exchange)
+            "%s\tPlacing %s order on the %s pair for amount of %s at price of %s on %s exchange.",
+            $this->getNow(), $order->side, $order->symbol, $order->amount, $order->price, \ucwords($order->exchange)
         ));
     }
 
