@@ -3,7 +3,6 @@
 namespace Kobens\Exchange\Command\Command\SimpleTrader;
 
 use Kobens\Core\Config;
-use Kobens\Exchange\Exception\LogicException;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
 use Kobens\Exchange\Trader\SimpleRepeater\NewOrder;
@@ -12,7 +11,6 @@ use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 
 class Monitor extends Command
 {
