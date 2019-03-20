@@ -104,6 +104,7 @@ class Monitor extends Command
                             $output->write(PHP_EOL);
                             $output->write(\sprintf(
                                 "%s\tSell order %s from the %s exchange marked filled",
+                                $this->getNow(),
                                 $order->exchangeOrderId,
                                 ucwords($order->exchange)
                             ));
