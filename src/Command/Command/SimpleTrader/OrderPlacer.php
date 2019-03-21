@@ -67,20 +67,22 @@ class OrderPlacer extends Command
     {
         $loop = true;
         $reported = false;
+        $lastUpdate = null;
         do {
             try {
                 if ($this->main($output)) {
                     $reported = false;
+                    $lastUpdate = \time();
                 }
-                if (!$reported) {
+                if (!$reported && ($lastUpdate === null || $lastUpdate - \time() > 5)) {
                     $output->write(PHP_EOL);
                     $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
                 }
-                if (\time() % 10 === 0) {
+                if ($reported === true && \time() % 10 === 0) {
                     $output->write('.');
                 }
-                \sleep(1);
+                \usleep(0500000);
             } catch (\Exception $e) {
                 $loop = false;
                 $this->logException($e);
@@ -94,7 +96,7 @@ class OrderPlacer extends Command
         $time = $i = 0;
         /** @var NewOrder $order */
         foreach ($this->repeater->getOrdersToPlace() as $order) {
-            // @todo fetch book, check price, don't attempt to place if not appropriate
+            // @todo comparison ahead of time of buys // sells to execute, any overlap, handle locally to avoid fees. (possible if orders added during DC)
             $time -= \microtime(true);
             try {
                 $exchangeOrderId = $this->place($order);
@@ -108,8 +110,6 @@ class OrderPlacer extends Command
             $time += \microtime(true);
             $ordersPerSecond = \round(1/($time/++$i), 2);
             $this->log['curlTimer']->notice($ordersPerSecond);
-            // @todo fetch exchange rate limit (add to interface); compare request time, dynamically determine sleep (if any)
-            \usleep(050000);
         }
         return $bool;
     }
