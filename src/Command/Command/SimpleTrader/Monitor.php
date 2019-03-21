@@ -67,7 +67,7 @@ class Monitor extends Command
             } catch (\Kobens\Core\Exception\ConnectionException $e) {
                 $output->write(PHP_EOL);
                 $output->writeln($this->getNow()."\t".$e->getMessage());
-                $output->write('Sleeping 30 seconds');
+                $output->write($this->getNow()."\tSleeping 30 seconds");
                 for ($i=30; $i>0; $i--) {
                     $output->write('.');
                     \sleep(1);
