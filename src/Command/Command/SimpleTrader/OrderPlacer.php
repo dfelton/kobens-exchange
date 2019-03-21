@@ -78,11 +78,10 @@ class OrderPlacer extends Command
                     $output->write(PHP_EOL);
                     $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
-                }
-                if ($reported === true && \time() % 10 === 0) {
+                } elseif ($reported === true && \time() % 10 === 0) {
                     $output->write('.');
                 }
-                \usleep(0500000);
+                \sleep(1);
             } catch (\Exception $e) {
                 $loop = false;
                 $this->logException($e);
