@@ -78,6 +78,8 @@ class OrderPlacer extends Command
                     $output->write(PHP_EOL);
                     $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
+                } elseif (\time() % 600 === 0) {
+                    $reported = false;
                 } elseif ($reported === true && \time() % 10 === 0) {
                     $output->write('.');
                 }
@@ -138,10 +140,11 @@ class OrderPlacer extends Command
 
     protected function reportOrder(OutputInterface $output, NewOrder $order) : void
     {
+        $color = $order->side === 'buy' ? 'green' : 'red';
         $output->write(PHP_EOL);
         $output->write(\sprintf(
-            "%s\tPlacing %s order on the %s pair for amount of %s at price of %s on %s exchange.",
-            $this->getNow(), $order->side, $order->symbol, $order->amount, $order->price, \ucwords($order->exchange)
+            "%s\tPlacing <fg=%s>%s</> order on the <fg=yellow>%s</> pair for amount of <fg=yellow>%s</> at price of <fg=yellow>%s</> on %s exchange.",
+            $this->getNow(), $color, $order->side, $order->symbol, $order->amount, $order->price, \ucwords($order->exchange)
         ));
     }
 

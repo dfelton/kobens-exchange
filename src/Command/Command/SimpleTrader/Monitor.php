@@ -59,8 +59,9 @@ class Monitor extends Command
                     $output->write(PHP_EOL);
                     $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
-                }
-                if (\time() % 10 === 0) {
+                } elseif (\time() % 600 === 0) {
+                    $reported = false;
+                } elseif (\time() % 10 === 0) {
                     $output->write('.');
                 }
                 \sleep(1);
