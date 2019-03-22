@@ -102,7 +102,7 @@ class Monitor extends Command
                             $this->repeater->markBuyFilled($order->orderId, $order->exchange);
                             $output->write(PHP_EOL);
                             $output->write(\sprintf(
-                                "%s\tBuy order %s from the %s exchange marked filled",
+                                "%s\t<fg=green>Buy</> order <fg=yellow>%s</> on the <fg=cyan>%s</> exchange marked filled",
                                 $this->getNow(),
                                 $order->exchangeOrderId,
                                 ucwords($order->exchange)
@@ -112,14 +112,18 @@ class Monitor extends Command
                             $this->repeater->markSellFilled($order->orderId, $order->exchange);
                             $output->write(PHP_EOL);
                             $output->write(\sprintf(
-                                "%s\tSell order %s from the %s exchange marked filled",
+                                "%s\t<fg=red>Sell</> order <fg=yellow>%s</> on the <fg=cyan>%s</> exchange marked filled",
                                 $this->getNow(),
                                 $order->exchangeOrderId,
                                 ucwords($order->exchange)
                             ));
                             break;
                         default:
-                            throw new \Exception(\sprintf('Unknown order status. Simple Repeater ID "%"', $order->orderId));
+                            throw new \Exception(\sprintf(
+                                'Unknown "%s" status. Data: %s',
+                                \get_class($order),
+                                $order->__toString()
+                            ));
                             break;
                     }
 
