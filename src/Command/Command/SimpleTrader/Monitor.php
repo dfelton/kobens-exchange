@@ -17,6 +17,11 @@ class Monitor extends Command
     use Traits;
 
     /**
+     * @var Logger
+     */
+    protected $log;
+
+    /**
      * @var SimpleRepeater
      */
     protected $repeater;
@@ -42,7 +47,7 @@ class Monitor extends Command
                 '%s/var/log/simple_trade_monitor.log',
                 (new Config())->getRoot()
             ),
-            Logger::INFO
+            Logger::DEBUG
         ));
     }
 
@@ -131,7 +136,9 @@ class Monitor extends Command
                     $this->repeater->markDisabled($order->orderId);
                 } else {
                     // if it is not alive, it is not filled, it is not cancelled, then what is it?
-                    throw new \Exception(\sprintf('Unknown Order Status. Simple Repeater ID "%s"', $order->orderId));
+                    $this->log->debug(\json_encode($metaData));
+                    $this->log->debug($order->__toString());
+                    throw new \Exception('Unknown Order Status');
                 }
             }
         }
