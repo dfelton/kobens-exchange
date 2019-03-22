@@ -29,6 +29,16 @@ class OrderId
         $this->status = $status;
     }
 
+    public function __toString()
+    {
+        return \json_encode([
+            'orderId' => $this->orderId,
+            'exchangeOrderId' => $this->exchangeOrderId,
+            'exchange' => $this->exchange,
+            'status' => $this->status,
+        ]);
+    }
+
     /**
      * Variable overloading
      *
