@@ -4,6 +4,7 @@ namespace Kobens\Exchange;
 
 use Kobens\Exchange\Book\BookInterface;
 use Kobens\Exchange\Book\Keeper\KeeperInterface;
+use Kobens\Exchange\Order\StatusInterface;
 
 /**
  * @todo organize some of these into a more strictly purposed interface, that this interface is capable of returning
@@ -24,7 +25,6 @@ interface ExchangeInterface
 
     public function getOrderMetaData(string $orderId) : array;
 
-    public function isOrderCancelled(array $metaData) : bool;
+    public function getStatusInterface() : StatusInterface;
 
-    public function isOrderFilled(array $metaData) : bool;
 }
