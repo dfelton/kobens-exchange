@@ -67,21 +67,22 @@ class OrderPlacer extends Command
     {
         $loop = true;
         $reported = false;
-        $lastUpdate = null;
+        $lastReported = 0;
+        $lastDot = 0;
         do {
             try {
                 if ($this->main($output)) {
                     $reported = false;
-                    $lastUpdate = \time();
                 }
-                if (!$reported && ($lastUpdate === null || $lastUpdate - \time() > 5)) {
+                $time = \time();
+                if (!$reported || $time - $lastReported >= 600) {
                     $output->write(PHP_EOL);
                     $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
-                } elseif (\time() % 600 === 0) {
-                    $reported = false;
-                } elseif ($reported === true && \time() % 10 === 0) {
+                    $lastReported =  $time;
+                } elseif ($time - $lastDot >= 10) {
                     $output->write('.');
+                    $lastDot = $time;
                 }
                 \sleep(1);
             } catch (\Exception $e) {
