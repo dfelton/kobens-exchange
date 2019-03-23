@@ -4,8 +4,12 @@ namespace Kobens\Exchange\Command\Command\SimpleTrader;
 
 use Kobens\Core\Command\Traits\Traits;
 use Kobens\Core\Config;
+use Kobens\Core\Exception\ConnectionException;
+use Kobens\Exchange\Exception\LogicException;
+use Kobens\Exchange\ExchangeInterface;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
+use Kobens\Exchange\Trader\SimpleRepeater\OrderId;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
@@ -55,22 +59,25 @@ class Monitor extends Command
     {
         $loop = true;
         $reported = false;
+        $lastReported = 0;
+        $lastDot = 0;
         do {
             try {
                 if ($this->main($output)) {
                     $reported = false;
                 }
-                if (!$reported) {
+                $time = \time();
+                if (!$reported || $time - $lastReported >= 600) {
                     $output->write(PHP_EOL);
                     $output->write($this->getNow()."\tAll active orders up to date");
                     $reported = true;
-                } elseif (\time() % 600 === 0) {
-                    $reported = false;
-                } elseif (\time() % 10 === 0) {
+                    $lastReported = $time;
+                } elseif ($time - $lastDot >= 10) {
                     $output->write('.');
+                    $lastDot = $time;
                 }
                 \sleep(1);
-            } catch (\Kobens\Core\Exception\ConnectionException $e) {
+            } catch (ConnectionException $e) {
                 $output->write(PHP_EOL);
                 $output->writeln($this->getNow()."\t".$e->getMessage());
                 $output->write($this->getNow()."\tSleeping 30 seconds");
@@ -91,58 +98,57 @@ class Monitor extends Command
         foreach ($this->mapper->getKeys() as $key) {
             $exchange = $this->mapper->getExchange($key);
             $aliveOrders = $exchange->getActiveOrderIds();
-            $activeSimpleRepeaters = $this->repeater->getAllActiveOrderIds($key);
 
             /** @var \Kobens\Exchange\Trader\SimpleRepeater\OrderId $order */
-            foreach ($activeSimpleRepeaters as $order) {
-
+            foreach ($this->repeater->getAllActiveOrderIds($key) as $order) {
                 if (\in_array($order->exchangeOrderId, $aliveOrders)) {
                     continue;
                 }
-                $metaData = $exchange->getOrderMetaData($order->exchangeOrderId);
-                if ($exchange->isOrderFilled($metaData)) {
-                    // @todo get this from the exchange's order meta? rather than last order status here? maybe not due to inconsistent formats across exchanges...
-                    switch ($order->status) {
-                        case SimpleRepeater::STATUS_BUY_PLACED:
-                            $this->repeater->markBuyFilled($order->orderId, $order->exchange);
-                            $output->write(PHP_EOL);
-                            $output->write(\sprintf(
-                                "%s\t<fg=green>Buy</> order <fg=yellow>%s</> on the <fg=cyan>%s</> exchange marked filled",
-                                $this->getNow(),
-                                $order->exchangeOrderId,
-                                ucwords($order->exchange)
-                            ));
-                            break;
-                        case SimpleRepeater::STATUS_SELL_PLACED:
-                            $this->repeater->markSellFilled($order->orderId, $order->exchange);
-                            $output->write(PHP_EOL);
-                            $output->write(\sprintf(
-                                "%s\t<fg=red>Sell</> order <fg=yellow>%s</> on the <fg=cyan>%s</> exchange marked filled",
-                                $this->getNow(),
-                                $order->exchangeOrderId,
-                                ucwords($order->exchange)
-                            ));
-                            break;
-                        default:
-                            throw new \Exception(\sprintf(
-                                'Unknown "%s" status. Data: %s',
-                                \get_class($order),
-                                $order->__toString()
-                            ));
-                            break;
-                    }
-
-                } elseif ($exchange->isOrderCancelled($metaData)) {
-                    $this->repeater->markDisabled($order->orderId);
-                } else {
-                    // if it is not alive, it is not filled, it is not cancelled, then what is it?
-                    $this->log->debug(\json_encode($metaData));
-                    $this->log->debug($order->__toString());
-                    throw new \Exception('Unknown Order Status');
-                }
+                $this->monitorOrder($order, $exchange, $output);
             }
         }
         return $bool;
+    }
+
+    protected function monitorOrder(OrderId $order, ExchangeInterface $exchange, OutputInterface $output) : void
+    {
+        $status = $exchange->getStatusInterface();
+        $meta = $exchange->getOrderMetaData($order->exchangeOrderId);
+        switch (true) {
+            case $status->isFilled($meta) && $order->status === SimpleRepeater::STATUS_BUY_PLACED:
+                $this->repeater->markBuyFilled($order->orderId, $order->exchange);
+                $output->write(PHP_EOL);
+                $output->write(\sprintf(
+                    "%s\tMarked <fg=green>buy</> order <fg=yellow>%s</> on the <fg=cyan>%s</> exchange filled",
+                    $this->getNow(),
+                    $order->exchangeOrderId,
+                    ucwords($order->exchange)
+                ));
+                break;
+            case $status->isFilled($meta) && $order->status === SimpleRepeater::STATUS_SELL_PLACED:
+                $this->repeater->markSellFilled($order->orderId, $order->exchange);
+                $output->write(PHP_EOL);
+                $output->write(\sprintf(
+                    "%s\tMarked <fg=red>sell</> order <fg=yellow>%s</> on the <fg=cyan>%s</> exchange filled",
+                    $this->getNow(),
+                    $order->exchangeOrderId,
+                    ucwords($order->exchange)
+                ));
+                break;
+            case $status->isLive($meta);
+                // Latency can cause us to get here.
+                break;
+
+            case $status->isOrderCancelled($meta);
+                // @todo logging  / comment on record?
+                $this->repeater->markDisabled($order->orderId);
+                break;
+            default:
+                $this->log->debug(\json_encode($meta));
+                $this->log->debug($order->__toString());
+                $this->logException(new LogicException('Unhandled order monitoring'));
+                break;
+        }
     }
 
     protected function logException(\Exception $e) : void
