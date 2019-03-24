@@ -85,6 +85,7 @@ class Monitor extends Command
                     $output->write('.');
                     \sleep(1);
                 }
+                $reported = false;
             } catch (\Exception $e) {
                 $loop = false;
                 $this->logException($e);
