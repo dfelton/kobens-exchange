@@ -10,16 +10,15 @@ abstract class AbstractExchange implements ExchangeInterface
     /**
      * @var PairInterface[]
      */
-    protected $pairs = [];
+    private $pairs = [];
 
     /**
      * @param PairInterface[] $pairs
      */
-    public function __construct(array $pairs)
+    protected function __construct(array $pairs)
     {
         $this->addPairs($pairs);
     }
-
 
     /**
      * Add currency pair to the exchange
@@ -27,7 +26,7 @@ abstract class AbstractExchange implements ExchangeInterface
      * @param PairInterface[] $pairs
      * @throws Exception
      */
-    private function addPairs(array $pairs)
+    final private function addPairs(array $pairs)
     {
         foreach ($pairs as $pair) {
             if (!$pair instanceof PairInterface) {
@@ -36,11 +35,14 @@ abstract class AbstractExchange implements ExchangeInterface
                     PairInterface::class
                 ));
             }
-            $this->pairs[$pair->getPairSymbol()] = $pair;
+            if (isset($this->pairs[$pair->symbol])) {
+                throw new \LogicException("Pair \"{$pair->symbol}\" already exists.");
+            }
+            $this->pairs[$pair->symbol] = $pair;
         }
     }
 
-    public function getPair(string $key) : PairInterface
+    final public function getPair(string $key) : PairInterface
     {
         if (!isset($this->pairs[$key])) {
             throw new Exception(\sprintf(
@@ -52,7 +54,7 @@ abstract class AbstractExchange implements ExchangeInterface
     }
 
 
-    public function getBook(string $pairKey) : BookInterface
+    final public function getBook(string $pairKey) : BookInterface
     {
         return new Book($this, $pairKey);
     }

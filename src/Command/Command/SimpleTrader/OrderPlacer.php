@@ -8,7 +8,7 @@ use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 use Kobens\Exchange\Exception\LogicException;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\Trader\SimpleRepeater;
-use Kobens\Exchange\Trader\SimpleRepeater\NewOrder;
+use Kobens\Exchange\Trader\SimpleRepeater\NewOrderInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
@@ -96,7 +96,7 @@ class OrderPlacer extends Command
     {
         $bool = false;
         $time = $i = 0;
-        /** @var NewOrder $order */
+        /** @var NewOrderInterface $order */
         foreach ($this->repeater->getOrdersToPlace() as $order) {
             // @todo comparison ahead of time of buys // sells to execute, any overlap, handle locally to avoid fees. (possible if orders added during DC)
             $time -= \microtime(true);
@@ -116,7 +116,7 @@ class OrderPlacer extends Command
         return $bool;
     }
 
-    protected function updateSimpleTrader(NewOrder $order, string $exchangeOrderId) : void
+    protected function updateSimpleTrader(NewOrderInterface $order, string $exchangeOrderId) : void
     {
         switch ($order->side) {
             case 'buy':
@@ -133,13 +133,13 @@ class OrderPlacer extends Command
         }
     }
 
-    protected function place(NewOrder $order) : string
+    protected function place(NewOrderInterface $order) : string
     {
         $exchange = $this->mapper->getExchange($order->exchange);
         return $exchange->placeOrder($order->side, $order->symbol, $order->amount, $order->price);
     }
 
-    protected function reportOrder(OutputInterface $output, NewOrder $order) : void
+    protected function reportOrder(OutputInterface $output, NewOrderInterface $order) : void
     {
         $color = $order->side === 'buy' ? 'green' : 'red';
         $output->write(PHP_EOL);

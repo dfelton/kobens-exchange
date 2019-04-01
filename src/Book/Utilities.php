@@ -88,7 +88,7 @@ class Utilities
                 'kobens',
                 $this->exchange->getCacheKey(),
                 'market-book',
-                $this->pair->getPairSymbol(),
+                $this->pair->symbol,
             ]);
         }
         return $this->cacheKeyBook;
@@ -100,8 +100,8 @@ class Utilities
             $this->cacheKeyLastTrade = \implode('_', [
                 'kobens',
                 $this->exchange->getCacheKey(),
-                $this->pair->getBaseCurrency()->getCacheIdentifier(),
-                $this->pair->getQuoteCurrency()->getCacheIdentifier(),
+                $this->pair->base->symbol,
+                $this->pair->quote->symbol,
                 'last_trade'
             ]);
         }
@@ -114,8 +114,8 @@ class Utilities
             $this->cacheKeyHeartbeat = \implode('_', [
                 'kobens',
                 $this->exchange->getCacheKey(),
-                $this->pair->getBaseCurrency()->getCacheIdentifier(),
-                $this->pair->getQuoteCurrency()->getCacheIdentifier(),
+                $this->pair->base->symbol,
+                $this->pair->quote->symbol,
                 'heartbeat'
             ]);
         }

@@ -77,7 +77,7 @@ class Book implements BookInterface
         return \bcsub(
             $this->getAskPrice(),
             $this->getBidPrice(),
-            $this->pair->getQuoteCurrency()->getScale()
+            $this->pair->quote->scale
         );
     }
 
@@ -95,7 +95,7 @@ class Book implements BookInterface
 
     public function getSymbol() : string
     {
-        return $this->pair->getPairSymbol();
+        return $this->pair->symbol;
     }
 
 }

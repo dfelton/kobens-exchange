@@ -4,15 +4,7 @@ namespace Kobens\Exchange\Trader\SimpleRepeater;
 
 use Kobens\Exchange\Exception\InvalidArgumentException;
 
-/**
- * @property-read int $id
- * @property-read string $exchange
- * @property-read string $side
- * @property-read string $symbol
- * @property-read string $amount
- * @property-read string $price
- */
-class NewOrder
+final class NewOrder implements NewOrderInterface
 {
     private $id;
     private $exchange;
@@ -46,7 +38,7 @@ class NewOrder
      * @throws InvalidArgumentException
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         switch ($name) {
             case 'id':
@@ -62,7 +54,11 @@ class NewOrder
             case 'price':
                 return $this->price;
             default:
-                throw new InvalidArgumentException('Not a valid magic property for this object');
+                throw new InvalidArgumentException(\sprintf(
+                    '"%s" is not a valid magic method property of "%s"',
+                    $name,
+                    self::class
+                ));
         }
     }
 }

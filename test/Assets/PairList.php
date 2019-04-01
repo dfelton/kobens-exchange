@@ -2,40 +2,38 @@
 
 namespace KobensTest\Exchange\Assets;
 
-use Kobens\Currency\Crypto\{Bitcoin as BTC,Ethereum as ETH,Litecoin as LTC,Zcash as ZEC};
-use Kobens\Currency\Fiat\USD;
+use Kobens\Currency\Currency;
 
 class PairList
 {
     public function toArray()
     {
         return [
-            [new BTC(), new ETH()],
-            [new BTC(), new LTC()],
-            [new BTC(), new USD()],
-            [new BTC(), new ZEC()],
+            [Currency::getInstance('btc'), Currency::getInstance('eth')],
+            [Currency::getInstance('btc'), Currency::getInstance('ltc')],
+            [Currency::getInstance('btc'), Currency::getInstance('usd')],
+            [Currency::getInstance('btc'), Currency::getInstance('zec')],
 
-            [new ETH(), new BTC()],
-            [new ETH(), new LTC()],
-            [new ETH(), new USD()],
-            [new ETH(), new ZEC()],
+            [Currency::getInstance('eth'), Currency::getInstance('btc')],
+            [Currency::getInstance('eth'), Currency::getInstance('ltc')],
+            [Currency::getInstance('eth'), Currency::getInstance('usd')],
+            [Currency::getInstance('eth'), Currency::getInstance('zec')],
 
-            [new LTC(), new BTC()],
-            [new LTC(), new ETH()],
-            [new LTC(), new USD()],
-            [new LTC(), new ZEC()],
+            [Currency::getInstance('ltc'), Currency::getInstance('btc')],
+            [Currency::getInstance('ltc'), Currency::getInstance('eth')],
+            [Currency::getInstance('ltc'), Currency::getInstance('usd')],
+            [Currency::getInstance('ltc'), Currency::getInstance('zec')],
 
-            [new USD(), new BTC()],
-            [new USD(), new ETH()],
-            [new USD(), new LTC()],
-            [new USD(), new ZEC()],
+            [Currency::getInstance('usd'), Currency::getInstance('btc')],
+            [Currency::getInstance('usd'), Currency::getInstance('eth')],
+            [Currency::getInstance('usd'), Currency::getInstance('ltc')],
+            [Currency::getInstance('usd'), Currency::getInstance('zec')],
 
-            [new ZEC(), new BTC()],
-            [new ZEC(), new ETH()],
-            [new ZEC(), new LTC()],
-            [new ZEC(), new USD()],
+            [Currency::getInstance('zec'), Currency::getInstance('btc')],
+            [Currency::getInstance('zec'), Currency::getInstance('eth')],
+            [Currency::getInstance('zec'), Currency::getInstance('ltc')],
+            [Currency::getInstance('zec'), Currency::getInstance('usd')],
         ];
-
     }
 
     public function getPairKeys()
