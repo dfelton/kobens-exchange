@@ -4,6 +4,7 @@ namespace Kobens\Exchange\Command\Command\SimpleTrader;
 
 use Kobens\Core\Command\Traits\Traits;
 use Kobens\Core\Config;
+use Kobens\Core\Exception\ConnectionException;
 use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 use Kobens\Exchange\Exception\LogicException;
 use Kobens\Exchange\Exchange\Mapper;
@@ -15,24 +16,24 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class OrderPlacer extends Command
+final class OrderPlacer extends Command
 {
     use Traits;
 
     /**
      * @var Logger[]
      */
-    protected $log = [];
+    private $log = [];
 
     /**
      * @var SimpleRepeater
      */
-    protected $repeater;
+    private $repeater;
 
     /**
      * @var Mapper
      */
-    protected $mapper;
+    private $mapper;
 
     protected function configure()
     {
@@ -85,6 +86,9 @@ class OrderPlacer extends Command
                     $lastDot = $time;
                 }
                 \sleep(1);
+            } catch (ConnectionException $e) {
+                $this->logException($e);
+                $this->sleep($output);
             } catch (\Exception $e) {
                 $loop = false;
                 $this->logException($e);
@@ -92,7 +96,7 @@ class OrderPlacer extends Command
         } while ($loop);
     }
 
-    protected function main(OutputInterface $output) : bool
+    private function main(OutputInterface $output) : bool
     {
         $bool = false;
         $time = $i = 0;
@@ -116,7 +120,7 @@ class OrderPlacer extends Command
         return $bool;
     }
 
-    protected function updateSimpleTrader(NewOrderInterface $order, string $exchangeOrderId) : void
+    private function updateSimpleTrader(NewOrderInterface $order, string $exchangeOrderId) : void
     {
         switch ($order->side) {
             case 'buy':
@@ -133,13 +137,13 @@ class OrderPlacer extends Command
         }
     }
 
-    protected function place(NewOrderInterface $order) : string
+    private function place(NewOrderInterface $order) : string
     {
         $exchange = $this->mapper->getExchange($order->exchange);
         return $exchange->placeOrder($order->side, $order->symbol, $order->amount, $order->price);
     }
 
-    protected function reportOrder(OutputInterface $output, NewOrderInterface $order) : void
+    private function reportOrder(OutputInterface $output, NewOrderInterface $order) : void
     {
         $color = $order->side === 'buy' ? 'green' : 'red';
         $output->write(PHP_EOL);
@@ -149,7 +153,7 @@ class OrderPlacer extends Command
         ));
     }
 
-    protected function logException(\Exception $e) : void
+    private function logException(\Exception $e) : void
     {
         $this->log['main']->error('Error Class: '.\get_class($e));
         $this->log['main']->error('Error Code: '.$e->getCode());
