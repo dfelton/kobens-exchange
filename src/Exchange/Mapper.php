@@ -5,28 +5,24 @@ namespace Kobens\Exchange\Exchange;
 use Kobens\Exchange\Exception\Exception;
 use Kobens\Exchange\ExchangeInterface;
 
-class Mapper
+final class Mapper
 {
     /**
-     * @var string
+     * @var string[]
      */
-    protected static $mappings = [];
+    private static $mappings = [];
 
     public function __construct(array $mappings = [])
     {
         if ($mappings !== [] && static::$mappings !== []) {
             throw new \LogicException(\sprintf(
-                '"%s" cannot be reinstantiated in the same thread with additional mappings.',
+                '"%s" cannot be reinstantiated in the same process with additional mappings.',
                 static::class
             ));
-        }
-        $this->addMappings($mappings);
-    }
-
-    protected function addMappings(array $mappings) : void
-    {
-        foreach ($this->validateMappings($mappings) as $map) {
-            static::$mappings[$map['key']] = $map['className'];
+        } elseif ($mappings !== []) {
+            foreach ($this->validateMappings($mappings) as $map) {
+                static::$mappings[$map['key']] = $map['className'];
+            }
         }
     }
 
@@ -68,6 +64,6 @@ class Mapper
 
     public function getKeys() : array
     {
-        return array_keys(static::$mappings);
+        return \array_keys(static::$mappings);
     }
 }
