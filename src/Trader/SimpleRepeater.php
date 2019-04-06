@@ -3,12 +3,12 @@
 namespace Kobens\Exchange\Trader;
 
 use Kobens\Core\Db;
+use Kobens\Exchange\Trader\SimpleRepeater\{NewOrder, OrderId};
 use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\ResultSet\ResultSetInterface;
-use Kobens\Exchange\Trader\SimpleRepeater\{NewOrder, OrderId};
 
-class SimpleRepeater
+final class SimpleRepeater
 {
     const TABLE_NAME = 'trader_simple_repeater';
 
@@ -46,7 +46,7 @@ class SimpleRepeater
         }
     }
 
-    protected function getBuys() : ResultSetInterface
+    private function getBuys() : ResultSetInterface
     {
         return $this->getTable()->select(function(Select $select) {
             $select->where->equalTo('auto_buy', self::AUTO_ENABLED);
@@ -55,7 +55,7 @@ class SimpleRepeater
         });
     }
 
-    protected function getSells() : ResultSetInterface
+    private function getSells() : ResultSetInterface
     {
         return $this->getTable()->select(function(Select $select) {
             $select->where->equalTo('auto_sell', self::AUTO_ENABLED);
@@ -119,8 +119,9 @@ class SimpleRepeater
         }
     }
 
-    protected function getTable() : TableGateway
+    private function getTable() : TableGateway
     {
         return new TableGateway(static::TABLE_NAME, (new Db())->getAdapter());
     }
+
 }

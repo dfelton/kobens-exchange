@@ -1,34 +1,35 @@
 <?php
+
 namespace Kobens\Exchange\Book;
 
+use Kobens\Core\Cache;
 use Kobens\Exchange\Book\Trade\TradeInterface;
 use Kobens\Exchange\{ExchangeInterface, PairInterface};
 use Zend\Cache\Storage\StorageInterface;
-use Kobens\Core\Cache;
 
-class Book implements BookInterface
+final class Book implements BookInterface
 {
     use BookTraits;
 
     /**
      * @var ExchangeInterface
      */
-    protected $exchange;
+    private $exchange;
 
     /**
      * @var Utilities
      */
-    protected $util;
+    private $util;
 
     /**
      * @var StorageInterface
      */
-    protected $cache;
+    private $cache;
 
     /**
      * @var PairInterface
      */
-    protected $pair;
+    private $pair;
 
     public function __construct(
         ExchangeInterface $exchange,

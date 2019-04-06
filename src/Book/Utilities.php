@@ -9,7 +9,7 @@ use Kobens\Exchange\Exception\Exception;
 use Zend\Cache\Storage\StorageInterface;
 use Kobens\Core\Cache;
 
-class Utilities
+final class Utilities
 {
     /**
      * Time (in seconds) to consider a book closed if
@@ -17,46 +17,45 @@ class Utilities
      *
      * @var integer
      */
-    protected $pulseExpiration;
+    private $pulseExpiration;
 
     /**
      * @var ExchangeInterface
      */
-    protected $exchange;
+    private $exchange;
 
     /**
      * @var PairInterface
      */
-    protected $pair;
+    private $pair;
 
     /**
      * @var StorageInterface
      */
-    protected $cache;
+    private $cache;
 
     /**
      * @var string
      */
-    protected $cacheKeyBook;
+    private $cacheKeyBook;
 
     /**
      * @var string
      */
-    protected $cacheKeyHeartbeat;
+    private $cacheKeyHeartbeat;
 
     /**
      * @var string
      */
-    protected $cacheKeyLastTrade;
+    private $cacheKeyLastTrade;
 
     public function __construct(
         ExchangeInterface $exchange,
         string $pairKey,
         int $pulseExpiration = 6
-    )
-    {
+    ) {
         if (!$pulseExpiration > 0) {
-            throw new Exception('Pulse expiration must be an integer greater than zero');
+            throw new Exception('Pulse expiration must be greater than zero');
         }
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
@@ -132,8 +131,7 @@ class Utilities
         if ($book === null) {
             throw new Exception('Unabled to fetch from cache');
         }
-        $book = json_decode($book, true);
-        return $book;
+        return \json_decode($book, true);
     }
 
 }

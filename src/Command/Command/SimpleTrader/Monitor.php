@@ -16,24 +16,24 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Monitor extends Command
+final class Monitor extends Command
 {
     use Traits;
 
     /**
      * @var Logger
      */
-    protected $log;
+    private $log;
 
     /**
      * @var SimpleRepeater
      */
-    protected $repeater;
+    private $repeater;
 
     /**
      * @var Mapper
      */
-    protected $mapper;
+    private $mapper;
 
     protected function configure()
     {
@@ -93,7 +93,7 @@ class Monitor extends Command
         } while ($loop);
     }
 
-    protected function main(OutputInterface $output) : bool
+    private function main(OutputInterface $output) : bool
     {
         $bool = false;
         foreach ($this->mapper->getKeys() as $key) {
@@ -111,7 +111,7 @@ class Monitor extends Command
         return $bool;
     }
 
-    protected function monitorOrder(OrderId $order, ExchangeInterface $exchange, OutputInterface $output) : void
+    private function monitorOrder(OrderId $order, ExchangeInterface $exchange, OutputInterface $output) : void
     {
         $status = $exchange->getStatusInterface();
         $meta = $exchange->getOrderMetaData($order->exchangeOrderId);
@@ -152,7 +152,7 @@ class Monitor extends Command
         }
     }
 
-    protected function logException(\Exception $e) : void
+    private function logException(\Exception $e) : void
     {
         $this->log->error('Error Class: '.\get_class($e));
         $this->log->error('Error Code: '.$e->getCode());

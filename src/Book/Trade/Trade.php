@@ -2,28 +2,28 @@
 
 namespace Kobens\Exchange\Book\Trade;
 
-class Trade implements TradeInterface
+final class Trade implements TradeInterface
 {
 
     /**
      * @var string
      */
-    protected $makerSide;
+    private $makerSide;
 
     /**
      * @var string
      */
-    protected $quantity;
+    private $quantity;
 
     /**
      * @var string
      */
-    protected $price;
+    private $price;
 
     /**
      * @var int
      */
-    protected $timestampms;
+    private $timestampms;
 
     /**
      * @throws \Kobens\Exchange\Exception\Exception
@@ -65,4 +65,5 @@ class Trade implements TradeInterface
     {
         return $this->timestampms;
     }
+
 }

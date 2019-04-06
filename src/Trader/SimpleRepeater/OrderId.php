@@ -10,7 +10,7 @@ use Kobens\Exchange\Exception\InvalidArgumentException;
  * @property-read string $exchange
  * @property-read string $status
  */
-class OrderId
+final class OrderId
 {
     private $orderId;
     private $exchangeOrderId;

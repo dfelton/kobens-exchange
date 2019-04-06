@@ -5,23 +5,22 @@ namespace Kobens\Exchange\Trader\SimpleRepeater;
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\PairInterface;
 
-class PositionGenerator
+final class PositionGenerator
 {
     /**
      * @var string
      */
-    protected $fee;
+    private $fee;
 
     /**
      * @var Mapper
      */
-    protected $mapper;
+    private $mapper;
 
     /**
      * @var PairInterface
      */
-    protected $pair;
-
+    private $pair;
 
     public function __construct($exchangeKey, $pairKey)
     {
