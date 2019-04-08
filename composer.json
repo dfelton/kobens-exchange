@@ -27,7 +27,8 @@
         "kobens/kobens-core": "dev-master",
         "monolog/monolog": "2.0.0-beta1",
         "symfony/console": "^4.2",
-        "zendframework/zend-cache": "^2.8"
+        "zendframework/zend-cache": "^2.8",
+        "zendframework/zend-db": "^2.9"
     },
     "autoload": {
         "psr-4": {
