@@ -16,5 +16,5 @@ if (!class_exists(Application::class)) {
 $input = new ArgvInput();
 
 $application = new Application();
-$application->add(new Monitor());
+$application->add(new Monitor());/** @noinspection PhpUnhandledExceptionInspection */
 $application->run($input);
