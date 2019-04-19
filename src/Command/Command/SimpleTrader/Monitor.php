@@ -45,6 +45,8 @@ final class Monitor extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @throws \Kobens\Core\Exception\LogicException
+     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     protected function initialize($input, $output): void
     {
