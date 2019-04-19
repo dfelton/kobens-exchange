@@ -41,11 +41,16 @@ final class Monitor extends Command
         $this->setDescription('Monitors the status of placed orders for the simple trade repeater');
     }
 
-    protected function initialize($input, $output)
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @throws \Kobens\Core\Exception\LogicException
+     */
+    protected function initialize($input, $output): void
     {
         $this->repeater = new SimpleRepeater();
-        $this->mapper = new Mapper();
-        $this->log = new Logger('simple_trade_monitor');
+        $this->mapper   = new Mapper();
+        $this->log      = new Logger('simple_trade_monitor');
         $this->log->pushHandler(new StreamHandler(
             \sprintf(
                 '%s/var/log/simple_trade_monitor.log',
@@ -55,6 +60,11 @@ final class Monitor extends Command
         ));
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $loop = true;
@@ -93,6 +103,11 @@ final class Monitor extends Command
         } while ($loop);
     }
 
+    /**
+     * @param OutputInterface $output
+     * @return bool
+     * @throws \Kobens\Exchange\Exception\Exception
+     */
     private function main(OutputInterface $output) : bool
     {
         $bool = false;
@@ -111,6 +126,11 @@ final class Monitor extends Command
         return $bool;
     }
 
+    /**
+     * @param OrderId $order
+     * @param ExchangeInterface $exchange
+     * @param OutputInterface $output
+     */
     private function monitorOrder(OrderId $order, ExchangeInterface $exchange, OutputInterface $output) : void
     {
         $status = $exchange->getStatusInterface();
@@ -152,6 +172,9 @@ final class Monitor extends Command
         }
     }
 
+    /**
+     * @param \Exception $e
+     */
     private function logException(\Exception $e) : void
     {
         $this->log->error('Error Class: '.\get_class($e));
