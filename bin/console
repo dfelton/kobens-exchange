@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+use Kobens\Exchange\Command\Command\SimpleTrader\Monitor;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+
+set_time_limit(0);
+
+require dirname(__DIR__).'/vendor/autoload.php';
+
+if (!class_exists(Application::class)) {
+    throw new RuntimeException('You need to add "symfony/console" as a Composer dependency.');
+}
+
+$input = new ArgvInput();
+
+$application = new Application();
+$application->add(new Monitor());
+$application->run($input);
