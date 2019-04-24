@@ -1,6 +1,6 @@
 <?php
 
-namespace Kobens\Exchange\Command\Command\SimpleTrader;
+namespace Kobens\Exchange\Command\Command\TradeRepeater;
 
 use Kobens\Core\Command\Traits\Traits;
 use Kobens\Core\Config;
@@ -8,8 +8,8 @@ use Kobens\Core\Exception\ConnectionException;
 use Kobens\Exchange\Exception\LogicException;
 use Kobens\Exchange\ExchangeInterface;
 use Kobens\Exchange\Exchange\Mapper;
-use Kobens\Exchange\Trader\SimpleRepeater;
-use Kobens\Exchange\Trader\SimpleRepeater\OrderId;
+use Kobens\Exchange\TradeStrategies\Repeater;
+use Kobens\Exchange\TradeStrategies\Repeater\OrderId;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
@@ -26,7 +26,7 @@ final class Monitor extends Command
     private $log;
 
     /**
-     * @var SimpleRepeater
+     * @var Repeater
      */
     private $repeater;
 
@@ -37,8 +37,8 @@ final class Monitor extends Command
 
     protected function configure()
     {
-        $this->setName('exchange:trader:simple-repeater:monitor');
-        $this->setDescription('Monitors the status of placed orders for the simple trade repeater');
+        $this->setName('kobens:exchange:trade-repeater:monitor');
+        $this->setDescription('Monitors the status of placed orders for the trade repeater');
     }
 
     /**
@@ -48,7 +48,7 @@ final class Monitor extends Command
      */
     protected function initialize($input, $output): void
     {
-        $this->repeater = new SimpleRepeater();
+        $this->repeater = new Repeater();
         $this->mapper   = new Mapper();
         $this->log      = new Logger('simple_trade_monitor');
         $this->log->pushHandler(new StreamHandler(
@@ -136,7 +136,7 @@ final class Monitor extends Command
         $status = $exchange->getStatusInterface();
         $meta = $exchange->getOrderMetaData($order->exchangeOrderId);
         switch (true) {
-            case $status->isFilled($meta) && $order->status === SimpleRepeater::STATUS_BUY_PLACED:
+            case $status->isFilled($meta) && $order->status === Repeater::STATUS_BUY_PLACED:
                 $this->repeater->markBuyFilled($order->orderId, $order->exchange);
                 $output->write(PHP_EOL);
                 $output->write(\sprintf(
@@ -146,7 +146,7 @@ final class Monitor extends Command
                     ucwords($order->exchange)
                 ));
                 break;
-            case $status->isFilled($meta) && $order->status === SimpleRepeater::STATUS_SELL_PLACED:
+            case $status->isFilled($meta) && $order->status === Repeater::STATUS_SELL_PLACED:
                 $this->repeater->markSellFilled($order->orderId, $order->exchange);
                 $output->write(PHP_EOL);
                 $output->write(\sprintf(

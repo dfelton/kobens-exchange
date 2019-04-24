@@ -1,6 +1,6 @@
 <?php
 
-namespace Kobens\Exchange\Trader\SimpleRepeater;
+namespace Kobens\Exchange\TradeStrategies\Repeater;
 
 use Kobens\Exchange\Exception\InvalidArgumentException;
 

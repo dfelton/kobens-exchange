@@ -1,6 +1,6 @@
 <?php
 
-namespace Kobens\Exchange\Command\Command\SimpleTrader;
+namespace Kobens\Exchange\Command\Command\TradeRepeater;
 
 use Kobens\Core\Command\Traits\Traits;
 use Kobens\Core\Config;
@@ -8,8 +8,8 @@ use Kobens\Core\Exception\ConnectionException;
 use Kobens\Exchange\Exception\Order\MakerOrCancelWouldTakeException;
 use Kobens\Exchange\Exception\LogicException;
 use Kobens\Exchange\Exchange\Mapper;
-use Kobens\Exchange\Trader\SimpleRepeater;
-use Kobens\Exchange\Trader\SimpleRepeater\NewOrderInterface;
+use Kobens\Exchange\TradeStrategies\Repeater;
+use Kobens\Exchange\TradeStrategies\Repeater\NewOrderInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Symfony\Component\Console\Command\Command;
@@ -26,7 +26,7 @@ final class OrderPlacer extends Command
     private $log = [];
 
     /**
-     * @var SimpleRepeater
+     * @var Repeater
      */
     private $repeater;
 
@@ -37,13 +37,13 @@ final class OrderPlacer extends Command
 
     protected function configure()
     {
-        $this->setName('exchange:trader:simple-repeater:order-placer');
-        $this->setDescription('Places buy and sell orders for the simple trade repeater.');
+        $this->setName('kobens:exchange:trade-repeater:place');
+        $this->setDescription('Places buy and sell orders for the trade repeater.');
     }
 
     protected function initialize($input, $output)
     {
-        $this->repeater = new SimpleRepeater();
+        $this->repeater = new Repeater();
         $this->mapper = new Mapper();
         $this->log['main'] = new Logger('simple_trade_repeater');
         $this->log['main']->pushHandler(new StreamHandler(

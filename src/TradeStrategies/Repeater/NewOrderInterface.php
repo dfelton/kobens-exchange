@@ -1,5 +1,6 @@
 <?php
-namespace Kobens\Exchange\Trader\SimpleRepeater;
+
+namespace Kobens\Exchange\TradeStrategies\Repeater;
 
 /**
  * @property-read int $id
