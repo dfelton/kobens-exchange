@@ -1,14 +1,14 @@
 <?php
 
-namespace Kobens\Exchange\Trader;
+namespace Kobens\Exchange\TradeStrategies;
 
 use Kobens\Core\Db;
-use Kobens\Exchange\Trader\SimpleRepeater\{NewOrder, OrderId};
+use Kobens\Exchange\TradeStrategies\Repeater\{NewOrder, OrderId};
 use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\ResultSet\ResultSetInterface;
 
-final class SimpleRepeater
+final class Repeater
 {
     const TABLE_NAME = 'trader_simple_repeater';
 

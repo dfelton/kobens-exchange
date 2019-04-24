@@ -1,6 +1,6 @@
 <?php
 
-namespace Kobens\Exchange\Trader\SimpleRepeater;
+namespace Kobens\Exchange\TradeStrategies\Repeater;
 
 use Kobens\Exchange\Exchange\Mapper;
 use Kobens\Exchange\PairInterface;
@@ -24,12 +24,8 @@ final class PositionGenerator
 
     public function __construct($exchangeKey, $pairKey)
     {
-        $mapper = new Mapper();
-        $exchange = $mapper->getExchange($exchangeKey);
-        $this->pair = $exchange->getPair($pairKey);
-
-
-        $this->mapper = $mapper;
+        $this->mapper = new Mapper();
+        $this->pair = $this->mapper->getExchange($exchangeKey)->getPair($pairKey);
     }
 
     public function generate(
