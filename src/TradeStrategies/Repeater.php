@@ -121,7 +121,7 @@ final class Repeater
 
     private function getTable() : TableGateway
     {
-        return new TableGateway(static::TABLE_NAME, (new Db())->getAdapter());
+        return new TableGateway(static::TABLE_NAME, Db::getAdapter());
     }
 
 }
