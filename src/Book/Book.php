@@ -36,7 +36,7 @@ final class Book implements BookInterface
         string $pairKey
     )
     {
-        $this->cache = (new Cache())->getCache();
+        $this->cache = Cache::getInstance();
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
         $this->util = new Utilities($exchange, $pairKey);

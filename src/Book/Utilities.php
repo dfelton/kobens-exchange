@@ -59,7 +59,7 @@ final class Utilities
         }
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
-        $this->cache = (new Cache())->getCache();
+        $this->cache = Cache::getInstance();
         $this->pulseExpiration = $pulseExpiration;
     }
 
