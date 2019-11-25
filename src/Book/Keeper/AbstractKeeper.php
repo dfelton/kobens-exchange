@@ -2,10 +2,10 @@
 
 namespace Kobens\Exchange\Book\Keeper;
 
-use Kobens\Core\Cache;
+use Kobens\Exchange\ExchangeInterface;
+use Kobens\Exchange\Book\BookTraits;
+use Kobens\Exchange\Book\Utilities;
 use Kobens\Exchange\Book\Trade\TradeInterface;
-use Kobens\Exchange\Book\{BookTraits, Utilities};
-use Kobens\Exchange\{ExchangeInterface, PairInterface};
 use Zend\Cache\Storage\StorageInterface;
 
 abstract class AbstractKeeper implements KeeperInterface
@@ -28,13 +28,14 @@ abstract class AbstractKeeper implements KeeperInterface
     protected $pair;
 
     public function __construct(
-        ExchangeInterface $exchange,
+        StorageInterface $storageInterface,
+        ExchangeInterface $exchangeInterface,
         string $pairKey
     ) {
-        $this->cache = Cache::getInstance();
-        $this->exchange = $exchange;
-        $this->pair = $exchange->getPair($pairKey);
-        $this->util = new Utilities($exchange, $pairKey);
+        $this->cache = $storageInterface;
+        $this->exchange = $exchangeInterface;
+        $this->pair = $exchangeInterface->getPair($pairKey);
+        $this->util = new Utilities($exchangeInterface, $pairKey);
     }
 
     protected function setPulse() : bool
