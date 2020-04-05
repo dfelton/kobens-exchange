@@ -23,7 +23,7 @@ abstract class AbstractKeeper implements KeeperInterface
     protected $util;
 
     /**
-     * @var PairInterface
+     * @var \Kobens\Exchange\PairInterface
      */
     protected $pair;
 
@@ -38,7 +38,7 @@ abstract class AbstractKeeper implements KeeperInterface
         $this->util = new Utilities($exchangeInterface, $pairKey);
     }
 
-    protected function setPulse() : bool
+    protected function setPulse(): bool
     {
         return $this->cache->setItem(
             $this->util->getHeartbeatCacheKey(),
@@ -49,7 +49,7 @@ abstract class AbstractKeeper implements KeeperInterface
     /**
      * Update the book
      */
-    protected function updateBook(string $makerSide, string $quote, string $remaining) : void
+    protected function updateBook(string $makerSide, string $quote, string $remaining): void
     {
         $this->validateSide($makerSide);
         $book = $this->util->getBook();
@@ -65,7 +65,7 @@ abstract class AbstractKeeper implements KeeperInterface
         );
     }
 
-    protected function populateBook(array $book) : void
+    protected function populateBook(array $book): void
     {
         foreach (['bid', 'ask'] as $key) {
             if (!isset($book[$key]) || !is_array($book[$key])) {
@@ -79,7 +79,7 @@ abstract class AbstractKeeper implements KeeperInterface
         );
     }
 
-    protected function setLastTrade(TradeInterface $trade) : void
+    protected function setLastTrade(TradeInterface $trade): void
     {
         $this->cache->setItem(
             $this->util->getLastTradeCacheKey(),
