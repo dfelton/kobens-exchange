@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Book\Trade;
 
 final class Trade implements TradeInterface
 {
-
     /**
      * @var string
      */
@@ -46,24 +47,23 @@ final class Trade implements TradeInterface
         $this->timestampms = $timestampms;
     }
 
-    public function getMakerSide() : string
+    public function getMakerSide(): string
     {
         return $this->makerSide;
     }
 
-    public function getQuantity() : string
+    public function getQuantity(): string
     {
         return $this->quantity;
     }
 
-    public function getPrice() : string
+    public function getPrice(): string
     {
         return $this->price;
     }
 
-    public function getTimestamp() : int
+    public function getTimestamp(): int
     {
         return $this->timestampms;
     }
-
 }

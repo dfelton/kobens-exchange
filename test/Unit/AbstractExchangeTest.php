@@ -21,17 +21,11 @@ class AbstractExchangeTest extends TestCase
         );;
     }
 
-    public function testGetPairThrowsException() : void
+    public function testGetPairThrowsException(): void
     {
         foreach (['foo', 'bar'] as $key) {
             $this->expectException(Exception::class);
             $this->exchange->getPair($key);
         }
     }
-
-    public function testGetCache() : void
-    {
-        $this->assertInstanceOf(StorageInterface::class, $this->exchange->getCache());
-    }
-
 }

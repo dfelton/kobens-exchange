@@ -7,17 +7,17 @@ use Kobens\Exchange\PairInterface;
 
 class Pair extends CurrencyPair implements PairInterface
 {
-    public function getMinOrderIncrement() : string
+    public function getMinOrderIncrement(): string
     {
         return '0.1';
     }
 
-    public function getMinOrderSize() : string
+    public function getMinOrderSize(): string
     {
         return '0.1';
     }
 
-    public function getMinPriceIncrement() : string
+    public function getMinPriceIncrement(): string
     {
         return '0.1';
     }

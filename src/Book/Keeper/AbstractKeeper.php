@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Book\Keeper;
 
 use Kobens\Exchange\ExchangeInterface;
 use Kobens\Exchange\Book\BookTraits;
 use Kobens\Exchange\Book\Utilities;
 use Kobens\Exchange\Book\Trade\TradeInterface;
-use Zend\Cache\Storage\StorageInterface;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 abstract class AbstractKeeper implements KeeperInterface
 {
     use BookTraits;
 
     /**
-     * @var StorageInterface
+     * @var AdapterInterface
      */
     protected $cache;
 
@@ -28,21 +30,25 @@ abstract class AbstractKeeper implements KeeperInterface
     protected $pair;
 
     public function __construct(
-        StorageInterface $storageInterface,
+        AdapterInterface $cacheAdapter,
         ExchangeInterface $exchangeInterface,
         string $pairKey
     ) {
-        $this->cache = $storageInterface;
+        $this->cache = $cacheAdapter;
         $this->exchange = $exchangeInterface;
         $this->pair = $exchangeInterface->getPair($pairKey);
         $this->util = new Utilities($exchangeInterface, $pairKey);
     }
 
+    /**
+     * Updates the pulse of the book. Returns true on success false on error.
+     *
+     * @return bool
+     */
     protected function setPulse(): bool
     {
-        return $this->cache->setItem(
-            $this->util->getHeartbeatCacheKey(),
-            (string) \microtime(true)
+        return $this->cache->save(
+            $this->cache->getItem($this->util->getHeartbeatCacheKey())->set((string) \microtime(true))
         );
     }
 
@@ -59,31 +65,25 @@ abstract class AbstractKeeper implements KeeperInterface
             $book[$makerSide][$quote] = $remaining;
         }
         $book = \json_encode($book);
-        $this->cache->setItem(
-            $this->util->getBookCacheKey(),
-            $book
+        $this->cache->save(
+            $this->cache->getItem($this->util->getBookCacheKey())->set($book)
         );
     }
 
     protected function populateBook(array $book): void
     {
-        foreach (['bid', 'ask'] as $key) {
-            if (!isset($book[$key]) || !is_array($book[$key])) {
-                // @todo throw exception
-            }
+        if (!is_array($book['bid'] ?? null) || !is_array($book['ask'] ?? null)) {
+            throw new \Exception('Book is missing bid or ask side.');
         }
-        $book = \json_encode($book);
-        $this->cache->setItem(
-            $this->util->getBookCacheKey(),
-            $book
+        $this->cache->save(
+            $this->cache->getItem($this->util->getBookCacheKey())->set(\json_encode($book))
         );
     }
 
     protected function setLastTrade(TradeInterface $trade): void
     {
-        $this->cache->setItem(
-            $this->util->getLastTradeCacheKey(),
-            $trade
+        $this->cache->save(
+            $this->cache->getItem($this->util->getLastTradeCacheKey())->set($trade)
         );
     }
 }

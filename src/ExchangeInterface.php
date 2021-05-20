@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange;
 
 use Kobens\Exchange\Book\BookInterface;
@@ -10,18 +12,17 @@ use Kobens\Exchange\Order\StatusInterface;
  */
 interface ExchangeInterface
 {
-    public function getCacheKey() : string;
+    public function getCacheKey(): string;
 
-    public function getPair(string $key) : PairInterface;
+    public function getPair(string $key): PairInterface;
 
-    public function getBook(string $key) : BookInterface;
+    public function getBook(string $key): BookInterface;
 
-    public function placeOrder(string $side, string $symbol, string $amount, string $price) : string;
+    public function placeOrder(string $side, string $symbol, string $amount, string $price): string;
 
-    public function getActiveOrderIds() : array;
+    public function getActiveOrderIds(): array;
 
-    public function getOrderMetaData(string $orderId) : array;
+    public function getOrderMetaData(string $orderId): array;
 
-    public function getStatusInterface() : StatusInterface;
-
+    public function getStatusInterface(): StatusInterface;
 }

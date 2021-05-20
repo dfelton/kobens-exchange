@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Command\Command\TradeRepeater;
 
 use Kobens\Core\Command\Traits\Traits;
@@ -182,5 +184,4 @@ final class Monitor extends Command
         $this->log->error('Error Message: '.$e->getMessage());
         $this->log->error('Stack Trace: '.$e->getTraceAsString());
     }
-
 }

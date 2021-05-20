@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Book;
 
 use Kobens\Exchange\ExchangeInterface;
 use Kobens\Exchange\PairInterface;
 use Kobens\Exchange\Exception\ClosedBookException;
 use Kobens\Exchange\Exception\Exception;
-use Zend\Cache\Storage\StorageInterface;
-use Kobens\Core\Cache;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 final class Utilities
 {
@@ -30,7 +31,7 @@ final class Utilities
     private $pair;
 
     /**
-     * @var StorageInterface
+     * @var AdapterInterface
      */
     private $cache;
 
@@ -50,6 +51,7 @@ final class Utilities
     private $cacheKeyLastTrade;
 
     public function __construct(
+        AdapterInterface $cacheAdapterInterface,
         ExchangeInterface $exchange,
         string $pairKey,
         int $pulseExpiration = 6
@@ -59,17 +61,17 @@ final class Utilities
         }
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
-        $this->cache = Cache::getInstance();
+        $this->cache = $cacheAdapterInterface;
         $this->pulseExpiration = $pulseExpiration;
     }
 
-    public function checkPulse() : void
+    public function checkPulse(): void
     {
-        $key = $this->getHeartbeatCacheKey();
-        if (!$this->cache->hasItem($key)) {
+        $item = $this->cache->getItem($this->getHeartbeatCacheKey());
+        if (!$item->isHit()) {
             throw new ClosedBookException('Market book is closed.');
         }
-        $meta = $this->cache->getMetadata($key);
+        $meta = $item->getMetadata();
         if ($meta === false) {
             throw new Exception('Unabled to fetch from cache');
         } elseif (\time() - $meta['mtime'] >= $this->pulseExpiration) {
@@ -80,7 +82,7 @@ final class Utilities
     /**
      * Return the cache key for the current book
      */
-    public function getBookCacheKey() : string
+    public function getBookCacheKey(): string
     {
         if (!$this->cacheKeyBook) {
             $this->cacheKeyBook = \implode('_', [
@@ -93,7 +95,7 @@ final class Utilities
         return $this->cacheKeyBook;
     }
 
-    public function getLastTradeCacheKey() : string
+    public function getLastTradeCacheKey(): string
     {
         if (!$this->cacheKeyLastTrade) {
             $this->cacheKeyLastTrade = \implode('_', [
@@ -107,7 +109,7 @@ final class Utilities
         return $this->cacheKeyLastTrade;
     }
 
-    public function getHeartbeatCacheKey() : string
+    public function getHeartbeatCacheKey(): string
     {
         if (!$this->cacheKeyHeartbeat) {
             $this->cacheKeyHeartbeat = \implode('_', [
@@ -124,15 +126,13 @@ final class Utilities
     /**
      * @throws Exception
      */
-    public function getBook() : array
+    public function getBook(): array
     {
         $this->checkPulse();
         $book = $this->cache->getItem($this->getBookCacheKey());
-        if ($book === null) {
+        if ($book->isHit() === false) {
             throw new Exception('Unabled to fetch from cache');
         }
-        return \json_decode($book, true);
+        return \json_decode($book->get(), true);
     }
-
 }
-

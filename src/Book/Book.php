@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Book;
 
-use Kobens\Core\Cache;
 use Kobens\Exchange\Book\Trade\TradeInterface;
 use Kobens\Exchange\{ExchangeInterface, PairInterface};
-use Zend\Cache\Storage\StorageInterface;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 final class Book implements BookInterface
 {
@@ -22,7 +23,7 @@ final class Book implements BookInterface
     private $util;
 
     /**
-     * @var StorageInterface
+     * @var AdapterInterface
      */
     private $cache;
 
@@ -32,11 +33,12 @@ final class Book implements BookInterface
     private $pair;
 
     public function __construct(
+        AdapterInterface $cacheAdapterInterface,
         ExchangeInterface $exchange,
         string $pairKey
     )
     {
-        $this->cache = Cache::getInstance();
+        $this->cache = $cacheAdapterInterface;
         $this->exchange = $exchange;
         $this->pair = $exchange->getPair($pairKey);
         $this->util = new Utilities($exchange, $pairKey);
@@ -57,8 +59,8 @@ final class Book implements BookInterface
     public function getLastTrade(): ?TradeInterface
     {
         $this->util->checkPulse();
-        $key = $this->util->getLastTradeCacheKey();
-        return $this->cache->getItem($key);
+        $item = $this->cache->getItem($this->util->getLastTradeCacheKey());
+        return $item->isHit() ? $item->get() : null;
     }
 
     public function getAskPrice(): string
@@ -98,7 +100,4 @@ final class Book implements BookInterface
     {
         return $this->pair->symbol;
     }
-
 }
-
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\TradeStrategies\Repeater;
 
 use Kobens\Exchange\Exchange\Mapper;
@@ -48,6 +50,4 @@ final class PositionGenerator
         $result = \rtrim($result, '.');
         return $result;
     }
-
 }
-

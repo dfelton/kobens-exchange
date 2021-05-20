@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange;
 
 use Kobens\Exchange\Book\{Book, BookInterface};
@@ -27,7 +29,7 @@ abstract class AbstractExchange implements ExchangeInterface
      *
      * @throws \LogicException
      */
-    final private function addPair(PairInterface $pair) : void
+    final private function addPair(PairInterface $pair): void
     {
         if (isset($this->pairs[$pair->symbol])) {
             throw new \LogicException("Pair \"{$pair->symbol}\" already exists.");
@@ -35,7 +37,7 @@ abstract class AbstractExchange implements ExchangeInterface
         $this->pairs[$pair->symbol] = $pair;
     }
 
-    final public function getPair(string $key) : PairInterface
+    final public function getPair(string $key): PairInterface
     {
         if (!isset($this->pairs[$key])) {
             throw new Exception("Currency Pair \"$key\" not found on exchange");
@@ -43,7 +45,7 @@ abstract class AbstractExchange implements ExchangeInterface
         return $this->pairs[$key];
     }
 
-    final public function getBook(string $pairKey) : BookInterface
+    final public function getBook(string $pairKey): BookInterface
     {
         return new Book($this, $pairKey);
     }

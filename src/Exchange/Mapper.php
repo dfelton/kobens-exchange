@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Exchange;
 
 use Kobens\Exchange\Exception\Exception;

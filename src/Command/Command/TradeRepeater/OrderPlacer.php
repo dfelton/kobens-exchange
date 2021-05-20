@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\Command\Command\TradeRepeater;
 
 use Kobens\Core\Command\Traits\Traits;
@@ -160,5 +162,4 @@ final class OrderPlacer extends Command
         $this->log['main']->error('Error Message: '.$e->getMessage());
         $this->log['main']->error('Stack Trace: '.$e->getTraceAsString());
     }
-
 }

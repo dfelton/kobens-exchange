@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange\TradeStrategies;
 
 use Kobens\Core\Db;
@@ -22,7 +24,7 @@ final class Repeater
     const STATUS_SELL_FILLED = 'sell_filled';
     const STATUS_DISABLED    = 'disabled';
 
-    public function getOrdersToPlace() : \Generator
+    public function getOrdersToPlace(): \Generator
     {
         foreach ($this->getBuys() as $row) {
             yield new NewOrder($row->id, $row->exchange, 'buy', $row->symbol, $row->buy_amount, $row->buy_price);
@@ -34,7 +36,7 @@ final class Repeater
         }
     }
 
-    public function getAllActiveOrderIds(string $exchange) : \Generator
+    public function getAllActiveOrderIds(string $exchange): \Generator
     {
         $records = $this->getTable()->select(function(Select $select) use ($exchange) {
             $select->columns(['id', 'last_order_id', 'exchange', 'status']);
@@ -46,7 +48,7 @@ final class Repeater
         }
     }
 
-    private function getBuys() : ResultSetInterface
+    private function getBuys(): ResultSetInterface
     {
         return $this->getTable()->select(function(Select $select) {
             $select->where->equalTo('auto_buy', self::AUTO_ENABLED);
@@ -55,7 +57,7 @@ final class Repeater
         });
     }
 
-    private function getSells() : ResultSetInterface
+    private function getSells(): ResultSetInterface
     {
         return $this->getTable()->select(function(Select $select) {
             $select->where->equalTo('auto_sell', self::AUTO_ENABLED);
@@ -64,7 +66,7 @@ final class Repeater
         });
     }
 
-    public function markBuyPlaced(string $id, string $exchange, string $orderId) : void
+    public function markBuyPlaced(string $id, string $exchange, string $orderId): void
     {
         $affectedRows = $this->getTable()->update(
             ['last_order_id' => $orderId, 'status' => self::STATUS_BUY_PLACED],
@@ -75,7 +77,7 @@ final class Repeater
         }
     }
 
-    public function markBuyFilled(string $id, string $exchange) : void
+    public function markBuyFilled(string $id, string $exchange): void
     {
         $affectedRows = $this->getTable()->update(
             ['status' => self::STATUS_BUY_FILLED],
@@ -86,7 +88,7 @@ final class Repeater
         }
     }
 
-    public function markSellPlaced(int $id, string $orderId) : void
+    public function markSellPlaced(int $id, string $orderId): void
     {
         $affectedRows = $this->getTable()->update(
             ['last_order_id' => $orderId, 'status' => self::STATUS_SELL_PLACED],
@@ -97,7 +99,7 @@ final class Repeater
         }
     }
 
-    public function markSellFilled(int $id) : void
+    public function markSellFilled(int $id): void
     {
         $affectedRows = $this->getTable()->update(
             ['status' => self::STATUS_SELL_FILLED],
@@ -108,7 +110,7 @@ final class Repeater
         }
     }
 
-    public function markDisabled(int $id) : void
+    public function markDisabled(int $id): void
     {
         $affectedRows = $this->getTable()->update(
             ['status' => self::STATUS_DISABLED],
@@ -119,9 +121,8 @@ final class Repeater
         }
     }
 
-    private function getTable() : TableGateway
+    private function getTable(): TableGateway
     {
         return new TableGateway(static::TABLE_NAME, Db::getAdapter());
     }
-
 }

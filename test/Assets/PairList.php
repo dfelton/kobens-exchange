@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KobensTest\Exchange\Assets;
 
 use Kobens\Currency\Currency;

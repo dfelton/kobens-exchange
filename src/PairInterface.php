@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kobens\Exchange;
 
 /**
@@ -9,10 +11,9 @@ namespace Kobens\Exchange;
  */
 interface PairInterface extends \Kobens\Currency\PairInterface
 {
-    public function getMinOrderSize() : string;
+    public function getMinOrderSize(): string;
 
-    public function getMinOrderIncrement() : string;
+    public function getMinOrderIncrement(): string;
 
-    public function getMinPriceIncrement() : string;
+    public function getMinPriceIncrement(): string;
 }
-
