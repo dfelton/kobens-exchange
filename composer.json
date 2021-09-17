@@ -1,6 +1,6 @@
 {
     "name": "kobens/kobens-exchange",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Library for providing a common interface for interacting with Exchange accounts via API.",
     "type": "library",
     "license": "BSD-3-Clause",
@@ -23,7 +23,7 @@
     ],
     "require": {
         "php": "^7.2 || ^7.3",
-        "kobens/kobens-currency": "^3.0",
+        "kobens/kobens-currency": "^3.0 || ^4.0",
         "kobens/kobens-core": "dev-master",
         "monolog/monolog": "2.0.0-beta1",
         "symfony/console": "^4.2",
@@ -41,7 +41,6 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^8",
-        "zendframework/zend-debug": "^2"
+        "phpunit/phpunit": "^9"
     }
 }
