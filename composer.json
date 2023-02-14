@@ -22,7 +22,7 @@
         }
     ],
     "require": {
-        "php": "^7.2 || ^7.3",
+        "php": "~7.4.0 || ~8.0.0 || ~8.1.0",
         "kobens/kobens-currency": "^3.0 || ^4.0",
         "kobens/kobens-core": "dev-master",
         "monolog/monolog": "2.0.0-beta1",
